@@ -19,7 +19,7 @@ jobs:
     outputs:
       has_app: ${{ steps.check.outputs.has_app }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: check
         run: |
           if [ -f Gemfile ]; then
@@ -34,7 +34,7 @@ jobs:
     if: needs.detect.outputs.has_app == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -46,7 +46,7 @@ jobs:
     if: needs.detect.outputs.has_app == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -64,7 +64,7 @@ jobs:
       RAILS_ENV: test
       TZ: Asia/Jakarta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install SQLite
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libsqlite3-dev
       - uses: ruby/setup-ruby@v1
