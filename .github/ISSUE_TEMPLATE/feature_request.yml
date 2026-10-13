@@ -1,0 +1,27 @@
+name: Usulan fitur
+description: Ide fitur atau perbaikan
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Masalah yang ingin diselesaikan
+      description: Ceritakan dari sisi pemilik kos atau penghuni.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Usulan solusi
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioritas (mengacu PRD)
+      options:
+        - P0
+        - P1
+        - Setelah MVP
+    validations:
+      required: true

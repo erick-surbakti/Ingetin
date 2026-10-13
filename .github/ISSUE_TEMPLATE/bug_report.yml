@@ -1,0 +1,44 @@
+name: Laporan bug
+description: Sesuatu tidak berjalan sebagaimana mestinya
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Apa yang terjadi?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Langkah reproduksi
+      placeholder: |
+        1. Buka ...
+        2. Tekan ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Yang seharusnya terjadi
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Tagihan
+        - Pembayaran / Midtrans
+        - Kirim WA
+        - Dashboard
+        - Properti / kamar / penghuni
+        - Login / akun
+        - Lainnya
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Perangkat & browser
+      placeholder: Android 14, Chrome
