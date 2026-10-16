@@ -1,5 +1,5 @@
 class InvoicesController < ApplicationController
-  before_action :set_invoice, only: %i[ send_whatsapp mark_paid ]
+  before_action :set_invoice, only: %i[ mark_sent mark_paid ]
 
   def index
     @month = selected_month
@@ -18,10 +18,11 @@ class InvoicesController < ApplicationController
     redirect_to invoices_path, notice: notice
   end
 
-  def send_whatsapp
+  # Dipanggil di latar belakang saat tombol Kirim WA ditekan; link wa.me
+  # sendiri dibuka langsung oleh browser.
+  def mark_sent
     @invoice.mark_sent!
-    message = InvoiceMessage.new(@invoice, link: public_invoice_url(@invoice.public_token))
-    redirect_to message.whatsapp_url, allow_other_host: true
+    head :no_content
   end
 
   def mark_paid

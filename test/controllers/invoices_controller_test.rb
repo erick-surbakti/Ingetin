@@ -31,14 +31,23 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
     assert_not tenants(:rina).invoices.exists?(period: Date.new(2026, 11, 1))
   end
 
-  test "send_whatsapp counts the send and redirects to wa.me" do
+  test "send button opens wa.me with the message and public link" do
     invoice = invoices(:joko_october)
 
-    post send_whatsapp_invoice_path(invoice)
+    get invoices_path(month: "2026-10")
 
-    assert_response :redirect
-    assert response.location.start_with?("https://wa.me/6285700000000?text=")
-    assert_includes CGI.unescape(response.location), public_invoice_url(invoice.public_token)
+    link = css_select("##{dom_id(invoice)} a[href^='https://wa.me/6285700000000?text=']").first
+    assert link, "tombol Kirim WA tidak ditemukan"
+    assert_includes CGI.unescape(link["href"]), public_invoice_url(invoice.public_token)
+    assert_equal mark_sent_invoice_path(invoice), link["data-track-send-url-value"]
+  end
+
+  test "mark_sent counts sends" do
+    invoice = invoices(:joko_october)
+
+    post mark_sent_invoice_path(invoice)
+
+    assert_response :no_content
     assert_equal 1, invoice.reload.sent_count
   end
 
@@ -56,7 +65,7 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
   test "another owner's invoice is not accessible" do
     other = invoices(:rina_october)
 
-    post send_whatsapp_invoice_path(other)
+    post mark_sent_invoice_path(other)
     assert_response :not_found
 
     patch mark_paid_invoice_path(other)

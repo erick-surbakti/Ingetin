@@ -18,7 +18,7 @@ Rails.application.routes.draw do
       post :generate
     end
     member do
-      post :send_whatsapp
+      post :mark_sent
       patch :mark_paid
     end
   end

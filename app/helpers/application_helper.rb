@@ -30,4 +30,8 @@ module ApplicationHelper
   def paid_via_label(paid_via)
     { "cash" => "Tunai", "qris" => "QRIS", "bank_transfer" => "Virtual Account" }.fetch(paid_via.to_s, "-")
   end
+
+  def whatsapp_url_for(invoice)
+    InvoiceMessage.new(invoice, link: public_invoice_url(invoice.public_token)).whatsapp_url
+  end
 end
