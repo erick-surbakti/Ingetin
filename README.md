@@ -2,7 +2,7 @@
 
 Aplikasi tagihan sewa otomatis untuk pemilik kos. Tagihan bulanan dibuat otomatis, penghuni bayar lewat link QRIS/VA Midtrans, status lunas berubah sendiri lewat webhook, dan pengingat dikirim ke WhatsApp dengan sekali tap.
 
-> **Status:** pra-MVP. Repo baru berisi fondasi (dokumen, CI, konvensi). Kode aplikasi menyusul.
+> **Status:** pra-MVP, sedang dibangun. Lihat [`docs/PRD.md`](docs/PRD.md) untuk cakupan.
 
 ## Fitur MVP
 
@@ -44,13 +44,16 @@ Tanpa Redis, tanpa Postgres terpisah, tanpa layanan eksternal selain Midtrans.
 
 ## Menjalankan secara lokal
 
-> Berlaku setelah kode aplikasi masuk.
-
 ```bash
 git clone https://github.com/erick-surbakti/Ingetin.git
 cd Ingetin
-cp .env.example .env
 bin/setup        # install gem, siapkan database, jalankan server
+```
+
+Buka http://localhost:3000, lalu daftar akun pemilik kos.
+
+```bash
+bin/ci           # jalankan semua cek (lint, security, test) seperti di CI
 ```
 
 Perintah harian:
@@ -65,11 +68,15 @@ Perintah harian:
 
 ## Variabel lingkungan
 
-Lihat [`.env.example`](.env.example). Rahasia aplikasi (kunci enkripsi, dsb.) disimpan di Rails credentials, bukan di `.env`. Server key Midtrans tiap pemilik kos disimpan terenkripsi di database.
+Lihat [`.env.example`](.env.example) untuk daftar variabel yang dipakai di production (diset lewat `.kamal/secrets` / environment server). Development tidak butuh `.env`. Rahasia aplikasi (kunci enkripsi, dsb.) disimpan di Rails credentials, bukan di `.env`. Server key Midtrans tiap pemilik kos disimpan terenkripsi di database.
 
 ## Struktur repo
 
 ```
+app/              Kode aplikasi Rails
+config/locales/   Terjemahan Bahasa Indonesia
+db/               Migrasi dan schema
+test/             Test
 .github/          CI, Dependabot, template issue & PR
 docs/             PRD dan keputusan arsitektur
 ```

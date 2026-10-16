@@ -1,0 +1,9 @@
+<% content_for :title, "Dasbor" %>
+
+<h1 class="page-title">Halo, <%= Current.user.name %></h1>
+<p class="mt-1 text-sm text-stone-600">Ringkasan tagihan bulan <%= l(Date.current, format: :month) %>.</p>
+
+<div class="card mt-6 text-center">
+  <p class="font-semibold">Belum ada properti</p>
+  <p class="mt-1 text-sm text-stone-600">Tambahkan rumah kos dan kamar untuk mulai membuat tagihan.</p>
+</div>

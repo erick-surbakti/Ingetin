@@ -1,0 +1,10 @@
+<% if record.errors.any? %>
+  <div id="form_errors" role="alert" class="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+    <p class="font-semibold">Periksa lagi isian berikut:</p>
+    <ul class="mt-1 list-disc pl-5">
+      <% record.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

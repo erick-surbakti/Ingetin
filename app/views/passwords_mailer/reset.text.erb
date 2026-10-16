@@ -1,0 +1,6 @@
+Halo <%= @user.name %>,
+
+Atur ulang kata sandi Ingetin kamu lewat link berikut:
+<%= edit_password_url(@user.password_reset_token) %>
+
+Link berlaku selama <%= @user.password_reset_token_expires_in.in_minutes.to_i %> menit. Abaikan email ini jika kamu tidak memintanya.

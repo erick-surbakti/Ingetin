@@ -1,0 +1,25 @@
+<% content_for :title, "Masuk" %>
+
+<div class="mx-auto max-w-sm pt-8">
+  <p class="text-center text-2xl font-bold text-brand-700">Ingetin</p>
+  <h1 class="mt-6 page-title">Masuk</h1>
+
+  <%= form_with url: session_url, class: "mt-6 space-y-4" do |form| %>
+    <div>
+      <%= form.label :email_address, "Email", class: "label" %>
+      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", value: params[:email_address], class: "input" %>
+    </div>
+
+    <div>
+      <%= form.label :password, "Kata sandi", class: "label" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "input" %>
+    </div>
+
+    <%= form.submit "Masuk", class: "btn-primary w-full" %>
+  <% end %>
+
+  <div class="mt-6 space-y-2 text-center text-sm text-stone-600">
+    <p><%= link_to "Lupa kata sandi?", new_password_path, class: "link" %></p>
+    <p>Belum punya akun? <%= link_to "Daftar gratis", new_registration_path, class: "link" %></p>
+  </div>
+</div>
