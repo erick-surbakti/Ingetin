@@ -1,0 +1,86 @@
+name: Bootstrap Rails app (sekali pakai)
+
+# Dijalankan sekali dari branch bootstrap/scaffold untuk men-generate aplikasi
+# Rails 8 di runner GitHub, lalu mendorong hasilnya ke branch feat/scaffold.
+
+on:
+  push:
+    branches: [bootstrap/scaffold]
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Jakarta
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: repo
+
+      - name: Install SQLite
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libsqlite3-dev
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3.6"
+
+      - name: Install Rails 8
+        run: |
+          gem install rails -v '~> 8.0' --no-document
+          rails -v
+
+      - name: rails new
+        working-directory: ${{ runner.temp }}
+        run: |
+          rails new ingetin \
+            --database=sqlite3 \
+            --css=tailwind \
+            --skip-git \
+            --skip-jbuilder
+          cd ingetin
+          bin/rails generate authentication
+          bundle lock --add-platform x86_64-linux aarch64-linux arm64-darwin x86_64-darwin || true
+          bin/rails db:prepare
+          # credentials.yml.enc tanpa master.key tidak berguna; dibuat ulang di mesin developer.
+          rm -f config/credentials.yml.enc config/master.key
+
+      - name: Smoke test hasil generate
+        working-directory: ${{ runner.temp }}/ingetin
+        run: |
+          bin/rails test
+          bin/rubocop
+
+      - name: Salin ke repo (file fondasi tidak ditimpa)
+        run: |
+          rsync -a \
+            --exclude '.git' \
+            --exclude 'README.md' \
+            --exclude '.gitignore' \
+            --exclude '.ruby-version' \
+            --exclude '.github' \
+            --exclude 'log/*.log' \
+            --exclude 'tmp/' \
+            --exclude 'storage/*.sqlite3*' \
+            --exclude 'node_modules' \
+            --exclude 'app/assets/builds/*.css' \
+            "$RUNNER_TEMP/ingetin/" repo/
+          mkdir -p repo/tmp repo/storage repo/log
+          touch repo/tmp/.keep repo/storage/.keep repo/log/.keep
+
+      - name: Commit & push ke feat/scaffold
+        working-directory: repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b feat/scaffold
+          git add -A
+          git commit -m "feat: generate aplikasi Rails 8 + autentikasi bawaan
+
+          Dibuat oleh workflow bootstrap: rails new (SQLite, Tailwind, importmap,
+          Solid Queue/Cache/Cable, Kamal) dan bin/rails generate authentication."
+          git push origin feat/scaffold
