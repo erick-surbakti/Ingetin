@@ -32,7 +32,7 @@ jobs:
       - name: Install Rails 8
         run: |
           gem install rails -v '~> 8.0' --no-document
-          rails -v
+          echo "::notice title=Versi::$(rails -v)"
 
       - name: rails new
         working-directory: ${{ runner.temp }}
@@ -51,9 +51,22 @@ jobs:
 
       - name: Smoke test hasil generate
         working-directory: ${{ runner.temp }}/ingetin
+        continue-on-error: true
         run: |
-          bin/rails test
-          bin/rubocop
+          set +e
+          report() {
+            name="$1"; shift
+            "$@" > "$RUNNER_TEMP/out.txt" 2>&1
+            code=$?
+            if [ $code -ne 0 ]; then
+              msg=$(tail -c 3500 "$RUNNER_TEMP/out.txt" | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+              echo "::error title=$name gagal::$msg"
+            fi
+            return $code
+          }
+          report "rails test" bin/rails test; t=$?
+          report "rubocop" bin/rubocop; r=$?
+          exit $(( t | r ))
 
       - name: Salin ke repo (file fondasi tidak ditimpa)
         run: |
