@@ -1,0 +1,24 @@
+<%= form_with model: [ property, room ], class: "space-y-4" do |form| %>
+  <%= render "shared/form_errors", record: room %>
+
+  <div>
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, required: true, maxlength: 50, placeholder: "A1", class: "input" %>
+  </div>
+
+  <div>
+    <%= form.label :monthly_rent, class: "label" %>
+    <div class="relative">
+      <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone-500">Rp</span>
+      <%= form.text_field :monthly_rent, required: true, inputmode: "numeric", placeholder: "1500000", class: "input pl-10" %>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-3">
+    <%= form.submit class: "btn-primary" %>
+    <% unless room.persisted? %>
+      <%= form.submit "Simpan & tambah lagi", name: "add_another", class: "btn-secondary" %>
+    <% end %>
+    <%= link_to "Batal", property_path(property), class: "btn-secondary" %>
+  </div>
+<% end %>

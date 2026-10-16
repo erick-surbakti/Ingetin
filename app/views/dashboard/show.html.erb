@@ -1,9 +1,27 @@
 <% content_for :title, "Dasbor" %>
 
 <h1 class="page-title">Halo, <%= Current.user.name %></h1>
-<p class="mt-1 text-sm text-stone-600">Ringkasan tagihan bulan <%= l(Date.current, format: :month) %>.</p>
+<p class="mt-1 text-sm text-stone-600">Ringkasan bulan <%= l(Date.current, format: :month) %>.</p>
 
-<div class="card mt-6 text-center">
-  <p class="font-semibold">Belum ada properti</p>
-  <p class="mt-1 text-sm text-stone-600">Tambahkan rumah kos dan kamar untuk mulai membuat tagihan.</p>
-</div>
+<% if @property_count.zero? %>
+  <div class="card mt-6 text-center">
+    <p class="font-semibold">Belum ada properti</p>
+    <p class="mt-1 text-sm text-stone-600">Tambahkan rumah kos dan kamar untuk mulai membuat tagihan.</p>
+    <%= link_to "Tambah properti", new_property_path, class: "btn-primary mt-4" %>
+  </div>
+<% else %>
+  <dl class="mt-6 grid grid-cols-3 gap-3">
+    <div class="card">
+      <dt class="text-xs text-stone-500">Properti</dt>
+      <dd class="mt-1 text-2xl font-bold" id="property_count"><%= @property_count %></dd>
+    </div>
+    <div class="card">
+      <dt class="text-xs text-stone-500">Kamar</dt>
+      <dd class="mt-1 text-2xl font-bold" id="room_count"><%= @room_count %></dd>
+    </div>
+    <div class="card">
+      <dt class="text-xs text-stone-500">Penghuni aktif</dt>
+      <dd class="mt-1 text-2xl font-bold" id="active_tenant_count"><%= @active_tenant_count %></dd>
+    </div>
+  </dl>
+<% end %>

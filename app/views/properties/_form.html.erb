@@ -1,0 +1,19 @@
+<%= form_with model: property, class: "space-y-4" do |form| %>
+  <%= render "shared/form_errors", record: property %>
+
+  <div>
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, required: true, maxlength: 100, placeholder: "Kos Melati", class: "input" %>
+  </div>
+
+  <div>
+    <%= form.label :address, class: "label" %>
+    <%= form.text_area :address, rows: 3, maxlength: 500, class: "input" %>
+    <p class="hint">Opsional.</p>
+  </div>
+
+  <div class="flex gap-3">
+    <%= form.submit class: "btn-primary" %>
+    <%= link_to "Batal", property.persisted? ? property_path(property) : properties_path, class: "btn-secondary" %>
+  </div>
+<% end %>

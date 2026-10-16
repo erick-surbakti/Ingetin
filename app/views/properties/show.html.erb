@@ -1,0 +1,39 @@
+<% content_for :title, @property.name %>
+
+<div class="flex items-start justify-between gap-3">
+  <div>
+    <h1 class="page-title"><%= @property.name %></h1>
+    <% if @property.address.present? %>
+      <p class="mt-1 text-sm text-stone-600"><%= @property.address %></p>
+    <% end %>
+  </div>
+  <%= link_to "Ubah", edit_property_path(@property), class: "btn-secondary" %>
+</div>
+
+<div class="mt-8 flex items-center justify-between gap-3">
+  <h2 class="text-lg font-semibold">Kamar (<%= @rooms.size %>)</h2>
+  <%= link_to "Tambah kamar", new_property_room_path(@property), class: "btn-primary" %>
+</div>
+
+<% if @rooms.empty? %>
+  <div class="card mt-4 text-center text-sm text-stone-600">Belum ada kamar.</div>
+<% else %>
+  <ul class="mt-4 divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
+    <% @rooms.each do |room| %>
+      <li class="flex items-center justify-between gap-3 px-4 py-3" id="<%= dom_id(room) %>">
+        <div class="min-w-0">
+          <p class="font-medium"><%= room.name %></p>
+          <p class="text-sm text-stone-600"><%= rupiah(room.monthly_rent) %>/bulan</p>
+        </div>
+        <div class="flex shrink-0 items-center gap-2 text-sm">
+          <% if room.vacant? %>
+            <%= link_to "Isi penghuni", new_tenant_path(room_id: room.id), class: "link" %>
+          <% else %>
+            <span class="truncate text-stone-700"><%= room.current_tenant.name %></span>
+          <% end %>
+          <%= link_to "Ubah", edit_property_room_path(@property, room), class: "btn-secondary py-1.5" %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

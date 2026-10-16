@@ -1,0 +1,44 @@
+<%= form_with model: tenant, class: "space-y-4" do |form| %>
+  <%= render "shared/form_errors", record: tenant %>
+
+  <div>
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, required: true, maxlength: 100, autocomplete: "off", class: "input" %>
+  </div>
+
+  <div>
+    <%= form.label :phone, class: "label" %>
+    <%= form.telephone_field :phone, required: true, inputmode: "tel", placeholder: "0812xxxxxxxx",
+          value: (tenant.phone.present? ? phone_display(tenant.phone) : nil), class: "input" %>
+    <p class="hint">Dipakai untuk mengirim tagihan lewat WhatsApp.</p>
+  </div>
+
+  <div>
+    <%= form.label :room_id, "Kamar", class: "label" %>
+    <% if room_options.empty? %>
+      <p class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+        Tidak ada kamar kosong. <%= link_to "Tambah kamar", properties_path, class: "link" %> dulu.
+      </p>
+    <% else %>
+      <%= form.select :room_id, grouped_options_for_select(room_options, tenant.room_id),
+            { include_blank: "Pilih kamar" }, required: true, class: "input" %>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= form.label :move_in_on, class: "label" %>
+      <%= form.date_field :move_in_on, required: true, class: "input" %>
+    </div>
+    <div>
+      <%= form.label :due_day, class: "label" %>
+      <%= form.number_field :due_day, min: 1, max: 31, step: 1, inputmode: "numeric", class: "input" %>
+    </div>
+  </div>
+  <p class="hint -mt-2">Tanggal jatuh tempo tiap bulan. Kosongkan untuk memakai tanggal masuk.</p>
+
+  <div class="flex gap-3">
+    <%= form.submit class: "btn-primary" %>
+    <%= link_to "Batal", tenants_path, class: "btn-secondary" %>
+  </div>
+<% end %>

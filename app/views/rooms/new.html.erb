@@ -1,0 +1,12 @@
+<% content_for :title, "Tambah kamar" %>
+
+<h1 class="page-title">Tambah kamar</h1>
+<p class="mb-6 mt-1 text-sm text-stone-600"><%= @property.name %></p>
+
+<% if Current.user.room_limit_reached? %>
+  <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+    Paket Gratis maksimal <%= User::FREE_ROOM_LIMIT %> kamar. Upgrade ke Pro untuk menambah kamar.
+  </div>
+<% end %>
+
+<%= render "form", property: @property, room: @room %>

@@ -1,0 +1,37 @@
+<% content_for :title, "Penghuni" %>
+
+<div class="flex items-center justify-between gap-3">
+  <h1 class="page-title">Penghuni</h1>
+  <%= link_to "Tambah", new_tenant_path, class: "btn-primary" %>
+</div>
+
+<div class="mt-4 flex gap-1 text-sm font-medium">
+  <%= link_to "Aktif", tenants_path, class: "rounded-md px-3 py-1.5 #{@status == "active" ? "bg-brand-50 text-brand-700" : "text-stone-600 hover:bg-stone-100"}" %>
+  <%= link_to "Sudah keluar", tenants_path(status: "moved_out"), class: "rounded-md px-3 py-1.5 #{@status == "moved_out" ? "bg-brand-50 text-brand-700" : "text-stone-600 hover:bg-stone-100"}" %>
+</div>
+
+<% if @tenants.empty? %>
+  <div class="card mt-4 text-center text-sm text-stone-600">
+    <%= @status == "active" ? "Belum ada penghuni aktif." : "Belum ada penghuni yang keluar." %>
+  </div>
+<% else %>
+  <ul class="mt-4 divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
+    <% @tenants.each do |tenant| %>
+      <li class="flex items-center justify-between gap-3 px-4 py-3" id="<%= dom_id(tenant) %>">
+        <div class="min-w-0">
+          <p class="truncate font-medium"><%= tenant.name %></p>
+          <p class="text-sm text-stone-600">
+            <%= tenant.room.property.name %> · <%= tenant.room.name %>
+            <% if tenant.active? %>
+              · jatuh tempo tgl <%= tenant.due_day %>
+            <% else %>
+              · keluar <%= l(tenant.moved_out_on, format: :long) %>
+            <% end %>
+          </p>
+          <p class="text-sm text-stone-500"><%= phone_display(tenant.phone) %></p>
+        </div>
+        <%= link_to "Ubah", edit_tenant_path(tenant), class: "btn-secondary shrink-0 py-1.5" %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
