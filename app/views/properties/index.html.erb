@@ -1,0 +1,26 @@
+<% content_for :title, "Properti" %>
+
+<div class="flex items-center justify-between gap-3">
+  <h1 class="page-title">Properti</h1>
+  <%= link_to "Tambah", new_property_path, class: "btn-primary" %>
+</div>
+
+<% if @properties.empty? %>
+  <div class="card mt-6 text-center text-sm text-stone-600">Belum ada properti.</div>
+<% else %>
+  <ul class="mt-6 space-y-3">
+    <% @properties.each do |property| %>
+      <li>
+        <%= link_to property_path(property), class: "card block hover:border-brand-600", id: dom_id(property) do %>
+          <p class="font-semibold"><%= property.name %></p>
+          <% if property.address.present? %>
+            <p class="mt-0.5 text-sm text-stone-600"><%= property.address %></p>
+          <% end %>
+          <p class="mt-2 text-sm text-stone-600">
+            <%= property.rooms.size %> kamar · <%= property.rooms.to_a.count(&:vacant?) %> kosong
+          </p>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

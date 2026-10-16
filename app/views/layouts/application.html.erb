@@ -30,6 +30,11 @@
             <%= button_to "Keluar", session_path, method: :delete, class: "btn-secondary py-1.5" %>
           </div>
         </div>
+        <nav class="mx-auto flex max-w-2xl gap-1 overflow-x-auto px-4 pb-2 text-sm font-medium">
+          <%= nav_link "Dasbor", root_path %>
+          <%= nav_link "Properti", properties_path %>
+          <%= nav_link "Penghuni", tenants_path %>
+        </nav>
       </header>
     <% end %>
 

@@ -1,0 +1,11 @@
+<% content_for :title, "Ubah properti" %>
+
+<h1 class="page-title mb-6">Ubah properti</h1>
+<%= render "form", property: @property %>
+
+<div class="card mt-8">
+  <p class="font-semibold">Hapus properti</p>
+  <p class="mt-1 text-sm text-stone-600">Hanya bisa dihapus jika belum ada kamar.</p>
+  <%= button_to "Hapus properti", property_path(@property), method: :delete, class: "btn-danger mt-3",
+        form: { data: { turbo_confirm: "Hapus #{@property.name}?" } } %>
+</div>

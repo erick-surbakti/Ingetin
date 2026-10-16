@@ -14,3 +14,7 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
   end
 end
+
+ActiveSupport.on_load(:action_dispatch_integration_test) do
+  include ActionView::RecordIdentifier
+end

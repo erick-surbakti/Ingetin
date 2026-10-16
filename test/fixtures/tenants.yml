@@ -1,0 +1,21 @@
+rina:
+  room: melati_a1
+  name: Rina
+  phone: "6281234567890"
+  move_in_on: 2026-01-10
+  due_day: 10
+
+dewi_moved_out:
+  room: melati_a2
+  name: Dewi
+  phone: "6281111111111"
+  move_in_on: 2025-06-01
+  due_day: 1
+  moved_out_on: 2026-05-31
+
+joko:
+  room: mawar_b1
+  name: Joko
+  phone: "6285700000000"
+  move_in_on: 2026-03-31
+  due_day: 31

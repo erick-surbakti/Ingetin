@@ -1,0 +1,19 @@
+melati_a1:
+  property: melati
+  name: A1
+  monthly_rent: 1500000
+
+melati_a2:
+  property: melati
+  name: A2
+  monthly_rent: 1250000
+
+melati_a3:
+  property: melati
+  name: A3
+  monthly_rent: 1250000
+
+mawar_b1:
+  property: mawar
+  name: B1
+  monthly_rent: 900000

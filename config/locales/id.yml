@@ -8,12 +8,32 @@ id:
           has_many: "Tidak bisa dihapus karena masih memiliki %{record} terkait"
     models:
       user: "Pemilik kos"
+      property: "Properti"
+      room: "Kamar"
+      tenant: "Penghuni"
     attributes:
       user:
         name: "Nama"
         email_address: "Email"
         password: "Kata sandi"
         password_confirmation: "Konfirmasi kata sandi"
+        plan: "Paket"
+      property:
+        name: "Nama properti"
+        address: "Alamat"
+        rooms: "kamar"
+      room:
+        name: "Nama kamar"
+        monthly_rent: "Harga sewa per bulan"
+        property: "Properti"
+        tenants: "riwayat penghuni"
+      tenant:
+        name: "Nama"
+        phone: "Nomor WhatsApp"
+        room: "Kamar"
+        move_in_on: "Tanggal masuk"
+        due_day: "Tanggal jatuh tempo"
+        moved_out_on: "Tanggal keluar"
 
   errors:
     format: "%{attribute} %{message}"
