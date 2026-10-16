@@ -18,6 +18,8 @@ id:
         password: "Kata sandi"
         password_confirmation: "Konfirmasi kata sandi"
         plan: "Paket"
+        midtrans_server_key: "Server key Midtrans"
+        va_admin_fee: "Biaya admin VA"
       property:
         name: "Nama properti"
         address: "Alamat"

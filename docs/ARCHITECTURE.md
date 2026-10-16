@@ -49,19 +49,24 @@ Penghuni memilih metode di halaman Snap, jadi satu link tidak bisa memuat dua no
 | Bayar QRIS | `other_qris` | Sewa |
 | Bayar Virtual Account | VA bank | Sewa + biaya admin VA |
 
-Setiap percobaan bayar memakai `order_id` unik (`<nomor tagihan>-<percobaan>`), karena `order_id` Midtrans tidak boleh dipakai ulang.
+Setiap percobaan bayar adalah satu `Payment` dengan `order_id` unik (`ING-<id tagihan>-<acak>`). Percobaan yang masih terbuka (≤23 jam) dipakai ulang untuk metode yang sama, sehingga penghuni yang menekan tombol dua kali tetap mendapat VA yang sama.
 
 ### Routing webhook
 
-- Endpoint: `POST /webhooks/midtrans/:owner_token`. `owner_token` dipakai untuk menemukan pemilik dan server key-nya.
-- URL notifikasi dikirim per transaksi lewat header `X-Override-Notification`, jadi pemilik tidak perlu mengatur URL di dashboard Midtrans. Verifikasi perilaku header ini di sandbox sebelum rilis.
+- Satu endpoint untuk semua pemilik: `POST /webhooks/midtrans`.
+- `order_id` (`ING-<id tagihan>-<acak>`) dipakai untuk menemukan `Payment`, lalu pemiliknya dan server key-nya.
+- Pemilik mengisi URL ini di dashboard Midtrans (Settings → Payment → Notification URL). Halaman Pengaturan Pembayaran menampilkan URL-nya.
+- Sebagai cadangan, setiap transaksi Snap juga mengirim header `X-Override-Notification` (hanya jika URL HTTPS). Dokumentasi Midtrans menyebut header ini untuk Core API; dukungannya di Snap perlu dicek di sandbox.
+- Saat penghuni kembali dari Snap (`?order_id=...`), halaman tagihan langsung menyinkronkan status lewat Get Status API, jadi kuitansi tampil walau webhook terlambat.
 
 ### Verifikasi & idempotensi
 
-1. Hitung `SHA512(order_id + status_code + gross_amount + server_key)` dan bandingkan dengan `signature_key` memakai perbandingan constant-time. Gagal berarti respons 401.
-2. Konfirmasi ulang status lewat Midtrans Get Status API sebelum mengubah data.
-3. Simpan `transaction_id` dengan unique index. Notifikasi ganda tidak mengubah apa pun dan tetap direspons 200.
-4. `settlement` (QRIS/VA) berarti **Lunas**. `expire`, `cancel`, dan `deny` mengembalikan tagihan ke **Belum bayar**.
+1. Hitung `SHA512(order_id + status_code + gross_amount + server_key)` dengan server key pemilik tagihan dan bandingkan dengan `signature_key` memakai perbandingan constant-time. Gagal berarti respons 401.
+2. Konfirmasi ulang status lewat Get Status API. Isi notifikasi tidak dipercaya untuk mengubah status.
+3. `order_id` dan `gross_amount` dari Get Status harus sama dengan `Payment`.
+4. `settlement` (atau `capture` + `fraud_status=accept`) berarti **Lunas**. Status lain hanya dicatat di `Payment`.
+5. Sinkron berjalan di dalam row lock. Payment yang sudah punya `paid_at` tidak diproses lagi, dan `midtrans_transaction_id` unik.
+6. Get Status gagal dihubungi berarti respons 503, sehingga Midtrans mencoba ulang.
 
 ## 6. Autentikasi
 

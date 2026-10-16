@@ -22,4 +22,29 @@ class UserTest < ActiveSupport::TestCase
     assert_not duplicate.valid?
     assert duplicate.errors.added?(:email_address, :taken, value: users(:one).email_address)
   end
+
+  test "midtrans server key is validated, encrypted, and masked" do
+    user = users(:one)
+
+    user.midtrans_server_key = "bukan-key"
+    assert_not user.valid?
+
+    user.update!(midtrans_server_key: " SB-Mid-server-AbCdEf123456 ")
+    assert_equal "SB-Mid-server-AbCdEf123456", user.reload.midtrans_server_key
+    assert user.midtrans_connected?
+    assert_equal "SB-Mid-server-••••3456", user.masked_midtrans_server_key
+
+    raw = User.connection.select_value("SELECT midtrans_server_key FROM users WHERE id = #{user.id}")
+    assert_not_includes raw, "AbCdEf123456"
+  end
+
+  test "va admin fee accepts formatted input within bounds" do
+    user = users(:one)
+    user.va_admin_fee = "4.000"
+    assert_equal 4_000, user.va_admin_fee
+    assert user.valid?
+
+    user.va_admin_fee = "20000"
+    assert_not user.valid?
+  end
 end

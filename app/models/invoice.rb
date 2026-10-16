@@ -2,6 +2,7 @@ class Invoice < ApplicationRecord
   PAID_VIA = %w[ cash qris bank_transfer ].freeze
 
   belongs_to :tenant
+  has_many :payments, dependent: :restrict_with_error
 
   has_secure_token :public_token, length: 24
 

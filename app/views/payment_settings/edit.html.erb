@@ -1,0 +1,46 @@
+<% content_for :title, "Pembayaran" %>
+
+<h1 class="page-title">Pembayaran online</h1>
+<p class="mt-1 text-sm text-stone-600">
+  Penghuni membayar lewat QRIS atau Virtual Account. Uang masuk langsung ke akun Midtrans milikmu, tidak lewat Ingetin.
+</p>
+
+<div class="card mt-6" id="midtrans_status">
+  <% if @user.midtrans_connected? %>
+    <p class="font-semibold text-brand-700">Midtrans terhubung</p>
+    <p class="mt-1 text-sm text-stone-600">Server key: <span class="font-mono"><%= @user.masked_midtrans_server_key %></span></p>
+  <% else %>
+    <p class="font-semibold text-amber-800">Midtrans belum terhubung</p>
+    <p class="mt-1 text-sm text-stone-600">Penghuni belum bisa bayar online sampai server key diisi.</p>
+  <% end %>
+</div>
+
+<%= form_with model: @user, url: payment_settings_path, method: :patch, class: "mt-6 space-y-4" do |form| %>
+  <%= render "shared/form_errors", record: @user %>
+
+  <div>
+    <%= form.label :midtrans_server_key, "Server key Midtrans", class: "label" %>
+    <%= form.password_field :midtrans_server_key, value: nil, autocomplete: "off", spellcheck: false,
+          placeholder: (@user.midtrans_connected? ? "Kosongkan jika tidak diganti" : "Mid-server-…"), class: "input font-mono" %>
+    <p class="hint">Dashboard Midtrans → Settings → Access Keys. Disimpan terenkripsi.</p>
+  </div>
+
+  <div>
+    <%= form.label :va_admin_fee, "Biaya admin Virtual Account", class: "label" %>
+    <div class="relative">
+      <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone-500">Rp</span>
+      <%= form.text_field :va_admin_fee, inputmode: "numeric", class: "input pl-10" %>
+    </div>
+    <p class="hint">Ditambahkan ke tagihan jika penghuni memilih VA, untuk menutup biaya VA Midtrans. QRIS tanpa biaya tambahan.</p>
+  </div>
+
+  <%= form.submit "Simpan", class: "btn-primary" %>
+<% end %>
+
+<div class="card mt-8 text-sm">
+  <p class="font-semibold">Atur URL notifikasi di Midtrans</p>
+  <p class="mt-1 text-stone-600">
+    Dashboard Midtrans → Settings → Payment → Notification URL. Isi dengan URL berikut supaya status lunas tercatat otomatis:
+  </p>
+  <p class="mt-2 break-all rounded-lg bg-stone-100 px-3 py-2 font-mono text-xs" id="notification_url"><%= midtrans_webhook_url %></p>
+</div>

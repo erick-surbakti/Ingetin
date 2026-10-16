@@ -17,6 +17,28 @@ class User < ApplicationRecord
     format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, length: { minimum: 8 }, allow_nil: true
   validates :plan, inclusion: { in: PLANS }
+  validates :midtrans_server_key, format: { with: /\A(SB-)?Mid-server-[A-Za-z0-9_-]+\z/, message: "harus diawali Mid-server- atau SB-Mid-server-" },
+    allow_blank: true
+  validates :va_admin_fee, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10_000 }
+
+  encrypts :midtrans_server_key
+
+  normalizes :midtrans_server_key, with: ->(key) { key.strip.presence }
+
+  # Terima input seperti "5.000".
+  def va_admin_fee=(value)
+    super(value.is_a?(String) ? value.gsub(/\D/, "").presence : value)
+  end
+
+  def midtrans_connected?
+    midtrans_server_key.present?
+  end
+
+  def masked_midtrans_server_key
+    return if midtrans_server_key.blank?
+
+    "#{midtrans_server_key.first(midtrans_server_key.start_with?("SB-") ? 14 : 11)}••••#{midtrans_server_key.last(4)}"
+  end
 
   def free_plan?
     plan == "free"

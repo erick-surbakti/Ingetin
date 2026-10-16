@@ -50,9 +50,35 @@
   </div>
 
   <% if @invoice.unpaid? %>
-    <div class="card mt-4 text-center text-sm text-stone-600" id="payment_options">
-      Pembayaran online akan segera tersedia. Untuk sementara, hubungi pemilik kos.
-    </div>
+    <% if @processing %>
+      <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" id="processing">
+        Pembayaran sedang diproses. Muat ulang halaman ini dalam beberapa saat.
+      </div>
+    <% end %>
+
+    <% if property.user.midtrans_connected? %>
+      <div class="mt-4 space-y-3" id="payment_options"
+           data-controller="pay" data-pay-url-value="<%= public_invoice_payments_path(@invoice.public_token) %>">
+        <button type="button" class="btn-primary w-full justify-between py-3" id="pay_qris"
+                data-pay-target="button" data-action="pay#start" data-pay-channel-param="qris">
+          <span>Bayar dengan QRIS</span>
+          <span><%= rupiah(@invoice.amount) %></span>
+        </button>
+        <button type="button" class="btn-secondary w-full justify-between py-3" id="pay_va"
+                data-pay-target="button" data-action="pay#start" data-pay-channel-param="va">
+          <span>Virtual Account</span>
+          <span><%= rupiah(@invoice.amount + property.user.va_admin_fee) %></span>
+        </button>
+        <% if property.user.va_admin_fee.positive? %>
+          <p class="text-center text-xs text-stone-500">Virtual Account termasuk biaya admin <%= rupiah(property.user.va_admin_fee) %>.</p>
+        <% end %>
+        <p class="hidden rounded-lg bg-red-50 px-3 py-2 text-center text-sm text-red-800" data-pay-target="error" role="alert"></p>
+      </div>
+    <% else %>
+      <div class="card mt-4 text-center text-sm text-stone-600" id="payment_unavailable">
+        Pembayaran online belum tersedia. Hubungi pemilik kos.
+      </div>
+    <% end %>
   <% else %>
     <p class="mt-4 text-center text-xs text-stone-500">Simpan halaman ini sebagai bukti pembayaran.</p>
   <% end %>

@@ -9,3 +9,4 @@ two:
   name: Pak Budi
   email_address: two@example.com
   password_digest: <%= password_digest %>
+  midtrans_server_key: SB-Mid-server-twoTestKey456
