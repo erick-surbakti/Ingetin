@@ -1,0 +1,25 @@
+<dl class="grid grid-cols-3 gap-3">
+  <div class="card">
+    <dt class="text-xs text-stone-500">Lunas</dt>
+    <dd class="mt-1 text-2xl font-bold text-brand-700" id="paid_count"><%= summary.paid.size %></dd>
+  </div>
+  <div class="card">
+    <dt class="text-xs text-stone-500">Belum bayar</dt>
+    <dd class="mt-1 text-2xl font-bold text-amber-700" id="unpaid_count"><%= summary.unpaid.size %></dd>
+  </div>
+  <div class="card">
+    <dt class="text-xs text-stone-500">Telat</dt>
+    <dd class="mt-1 text-2xl font-bold text-red-700" id="overdue_count"><%= summary.overdue.size %></dd>
+  </div>
+</dl>
+
+<dl class="mt-3 grid grid-cols-2 gap-3">
+  <div class="card">
+    <dt class="text-xs text-stone-500">Diterima</dt>
+    <dd class="mt-1 text-lg font-bold" id="received_total"><%= rupiah(summary.received_total) %></dd>
+  </div>
+  <div class="card">
+    <dt class="text-xs text-stone-500">Belum diterima</dt>
+    <dd class="mt-1 text-lg font-bold" id="outstanding_total"><%= rupiah(summary.outstanding_total) %></dd>
+  </div>
+</dl>

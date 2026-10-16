@@ -1,0 +1,37 @@
+<li class="px-4 py-3" id="<%= dom_id(invoice) %>">
+  <div class="flex items-start justify-between gap-3">
+    <div class="min-w-0">
+      <p class="truncate font-medium"><%= invoice.tenant.name %></p>
+      <p class="text-sm text-stone-600">
+        <%= invoice.tenant.room.property.name %> · <%= invoice.tenant.room.name %> · <%= rupiah(invoice.amount) %>
+      </p>
+      <p class="text-xs text-stone-500">
+        <% if invoice.paid? %>
+          Lunas <%= l(invoice.paid_at, format: :short) %> · <%= paid_via_label(invoice.paid_via) %>
+        <% else %>
+          Jatuh tempo <%= l(invoice.due_on, format: :long) %>
+          <% if invoice.sent_count.positive? %>
+            · dikirim <%= invoice.sent_count %>x, terakhir <%= l(invoice.last_sent_at, format: :short) %>
+          <% end %>
+        <% end %>
+      </p>
+    </div>
+    <%= invoice_status_badge(invoice) %>
+  </div>
+
+  <% if invoice.unpaid? %>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <%= button_to send_whatsapp_invoice_path(invoice), class: "btn-primary py-1.5",
+            form: { target: "_blank", data: { turbo: false } } do %>
+        <%= invoice.overdue? ? "Kirim pengingat WA" : "Kirim WA" %>
+      <% end %>
+      <%= button_to "Catat lunas tunai", mark_paid_invoice_path(invoice), method: :patch, class: "btn-secondary py-1.5",
+            form: { data: { turbo_confirm: "Catat tagihan #{invoice.tenant.name} lunas dibayar tunai?" } } %>
+      <%= link_to "Lihat", public_invoice_path(invoice.public_token), class: "btn-secondary py-1.5", target: "_blank", rel: "noopener" %>
+    </div>
+  <% else %>
+    <div class="mt-3">
+      <%= link_to "Lihat kuitansi", public_invoice_path(invoice.public_token), class: "link text-sm", target: "_blank", rel: "noopener" %>
+    </div>
+  <% end %>
+</li>

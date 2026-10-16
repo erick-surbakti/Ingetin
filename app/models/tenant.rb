@@ -3,6 +3,7 @@ class Tenant < ApplicationRecord
 
   belongs_to :room, inverse_of: :tenants
   has_one :property, through: :room
+  has_many :invoices, dependent: :restrict_with_error
 
   scope :active, -> { where(moved_out_on: nil) }
   scope :moved_out, -> { where.not(moved_out_on: nil) }
@@ -21,6 +22,13 @@ class Tenant < ApplicationRecord
 
   def active?
     moved_out_on.nil?
+  end
+
+  # Tagihan hanya untuk jatuh tempo setelah tanggal masuk (bulan pertama
+  # dibayar saat masuk) dan tidak sebelum penghuni dicatat di aplikasi
+  # (bulan yang sudah lewat dianggap sudah ditagih di luar aplikasi).
+  def billable_on?(due_on)
+    due_on > move_in_on && due_on >= created_at.to_date
   end
 
   # Tanggal jatuh tempo di bulan yang memuat `date`. Jatuh tempo 29–31

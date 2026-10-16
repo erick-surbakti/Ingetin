@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :properties, dependent: :destroy
   has_many :rooms, through: :properties
   has_many :tenants, through: :rooms
+  has_many :invoices, through: :tenants
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :name, with: ->(n) { n.squish }

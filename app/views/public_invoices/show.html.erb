@@ -1,0 +1,59 @@
+<% content_for :title, @invoice.paid? ? "Kuitansi" : "Tagihan" %>
+<% content_for :head do %>
+  <meta name="robots" content="noindex, nofollow">
+<% end %>
+
+<% tenant = @invoice.tenant %>
+<% property = tenant.room.property %>
+
+<div class="mx-auto max-w-md">
+  <p class="text-center text-sm text-stone-500"><%= property.name %></p>
+  <h1 class="mt-1 text-center text-xl font-bold"><%= @invoice.paid? ? "Kuitansi pembayaran" : "Tagihan sewa" %></h1>
+
+  <div class="card mt-6">
+    <div class="flex items-center justify-between gap-3">
+      <p class="text-sm text-stone-500"><%= @invoice.number %></p>
+      <%= invoice_status_badge(@invoice) %>
+    </div>
+
+    <p class="mt-4 text-3xl font-bold" id="amount"><%= rupiah(@invoice.amount) %></p>
+    <p class="mt-1 text-sm text-stone-600"><%= @invoice.description %></p>
+
+    <dl class="mt-4 space-y-2 border-t border-stone-200 pt-4 text-sm">
+      <div class="flex justify-between gap-3">
+        <dt class="text-stone-500">Penghuni</dt>
+        <dd class="text-right font-medium"><%= tenant.name %></dd>
+      </div>
+      <div class="flex justify-between gap-3">
+        <dt class="text-stone-500">Kamar</dt>
+        <dd class="text-right font-medium"><%= tenant.room.name %></dd>
+      </div>
+      <div class="flex justify-between gap-3">
+        <dt class="text-stone-500">Jatuh tempo</dt>
+        <dd class="text-right font-medium"><%= l(@invoice.due_on, format: :long) %></dd>
+      </div>
+      <% if @invoice.paid? %>
+        <div class="flex justify-between gap-3">
+          <dt class="text-stone-500">Dibayar</dt>
+          <dd class="text-right font-medium" id="paid_at"><%= l(@invoice.paid_at, format: :long) %></dd>
+        </div>
+        <div class="flex justify-between gap-3">
+          <dt class="text-stone-500">Metode</dt>
+          <dd class="text-right font-medium"><%= paid_via_label(@invoice.paid_via) %></dd>
+        </div>
+      <% end %>
+      <div class="flex justify-between gap-3">
+        <dt class="text-stone-500">Pemilik kos</dt>
+        <dd class="text-right font-medium"><%= property.user.name %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <% if @invoice.unpaid? %>
+    <div class="card mt-4 text-center text-sm text-stone-600" id="payment_options">
+      Pembayaran online akan segera tersedia. Untuk sementara, hubungi pemilik kos.
+    </div>
+  <% else %>
+    <p class="mt-4 text-center text-xs text-stone-500">Simpan halaman ini sebagai bukti pembayaran.</p>
+  <% end %>
+</div>

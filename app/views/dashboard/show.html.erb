@@ -1,7 +1,7 @@
 <% content_for :title, "Dasbor" %>
 
 <h1 class="page-title">Halo, <%= Current.user.name %></h1>
-<p class="mt-1 text-sm text-stone-600">Ringkasan bulan <%= l(Date.current, format: :month) %>.</p>
+<p class="mt-1 text-sm text-stone-600">Ringkasan tagihan <%= l(@month, format: :month) %>.</p>
 
 <% if @property_count.zero? %>
   <div class="card mt-6 text-center">
@@ -10,18 +10,31 @@
     <%= link_to "Tambah properti", new_property_path, class: "btn-primary mt-4" %>
   </div>
 <% else %>
-  <dl class="mt-6 grid grid-cols-3 gap-3">
-    <div class="card">
-      <dt class="text-xs text-stone-500">Properti</dt>
-      <dd class="mt-1 text-2xl font-bold" id="property_count"><%= @property_count %></dd>
+  <div class="mt-6">
+    <%= render "invoices/summary", summary: @summary %>
+  </div>
+
+  <div class="mt-8 flex items-center justify-between">
+    <h2 class="text-lg font-semibold">Belum bayar</h2>
+    <%= link_to "Semua tagihan", invoices_path, class: "link text-sm" %>
+  </div>
+
+  <% unpaid = @summary.sorted.select(&:unpaid?) %>
+  <% if unpaid.empty? %>
+    <div class="card mt-3 text-center text-sm text-stone-600" id="all_paid">
+      <%= @summary.invoices.empty? ? "Belum ada tagihan bulan ini." : "Semua tagihan bulan ini sudah lunas." %>
     </div>
-    <div class="card">
-      <dt class="text-xs text-stone-500">Kamar</dt>
-      <dd class="mt-1 text-2xl font-bold" id="room_count"><%= @room_count %></dd>
-    </div>
-    <div class="card">
-      <dt class="text-xs text-stone-500">Penghuni aktif</dt>
-      <dd class="mt-1 text-2xl font-bold" id="active_tenant_count"><%= @active_tenant_count %></dd>
-    </div>
-  </dl>
+  <% else %>
+    <ul class="mt-3 divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white" id="unpaid_invoices">
+      <% unpaid.each do |invoice| %>
+        <li class="flex items-center justify-between gap-3 px-4 py-3" id="<%= dom_id(invoice) %>">
+          <div class="min-w-0">
+            <p class="truncate font-medium"><%= invoice.tenant.name %></p>
+            <p class="text-sm text-stone-600"><%= invoice.tenant.room.name %> · <%= rupiah(invoice.amount) %> · <%= l(invoice.due_on, format: :short) %></p>
+          </div>
+          <%= invoice_status_badge(invoice) %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
 <% end %>
