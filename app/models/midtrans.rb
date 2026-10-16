@@ -31,7 +31,7 @@ module Midtrans
 
   # SHA512(order_id + status_code + gross_amount + server_key)
   def valid_signature?(payload, server_key:)
-    expected = Digest::SHA512.hexdigest(
+    expected = ::Digest::SHA512.hexdigest(
       "#{payload["order_id"]}#{payload["status_code"]}#{payload["gross_amount"]}#{server_key}"
     )
     ActiveSupport::SecurityUtils.secure_compare(expected, payload["signature_key"].to_s)

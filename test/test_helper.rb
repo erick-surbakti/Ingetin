@@ -17,7 +17,7 @@ module ActiveSupport
     setup { FakeMidtransClient.reset! }
 
     def midtrans_signature(order_id, status_code, gross_amount, server_key)
-      Digest::SHA512.hexdigest("#{order_id}#{status_code}#{gross_amount}#{server_key}")
+      ::Digest::SHA512.hexdigest("#{order_id}#{status_code}#{gross_amount}#{server_key}")
     end
   end
 end

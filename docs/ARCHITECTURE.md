@@ -93,7 +93,7 @@ User ──┬─ Property ── Room ── Tenant ── Invoice ─┬─ In
 | Room | property_id, name, monthly_rent |
 | Tenant | room_id, name, phone, move_in_on, due_day, moved_out_on |
 | Invoice | tenant_id, period, due_on, amount, status, public_token — unique `(tenant_id, period)` |
-| Payment | invoice_id, order_id, method, gross_amount, midtrans_transaction_id (unique), status, paid_at |
+| Payment | invoice_id, order_id (unique), channel (qris/va), gross_amount, admin_fee, midtrans_transaction_id (unique), status, paid_at |
 
 ## 9. Operasional
 
