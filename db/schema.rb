@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_16_180100) do
   create_table "invoices", force: :cascade do |t|
     t.integer "tenant_id", null: false
     t.date "period", null: false
@@ -31,6 +31,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_170000) do
     t.index ["tenant_id"], name: "index_invoices_on_tenant_id"
     t.check_constraint "amount > 0", name: "invoices_amount_positive"
     t.check_constraint "status IN ('unpaid', 'paid')", name: "invoices_status_valid"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.integer "invoice_id", null: false
+    t.string "order_id", null: false
+    t.string "channel", null: false
+    t.integer "gross_amount", null: false
+    t.integer "admin_fee", default: 0, null: false
+    t.string "status", default: "created", null: false
+    t.string "snap_token"
+    t.string "redirect_url"
+    t.string "midtrans_transaction_id"
+    t.string "payment_type"
+    t.datetime "paid_at"
+    t.datetime "expires_at", null: false
+    t.text "last_notification"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_payments_on_invoice_id"
+    t.index ["midtrans_transaction_id"], name: "index_payments_on_midtrans_transaction_id", unique: true
+    t.index ["order_id"], name: "index_payments_on_order_id", unique: true
+    t.check_constraint "channel IN ('qris', 'va')", name: "payments_channel_valid"
+    t.check_constraint "gross_amount > 0", name: "payments_gross_amount_positive"
   end
 
   create_table "properties", force: :cascade do |t|
@@ -83,10 +106,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_170000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "plan", default: "free", null: false
+    t.text "midtrans_server_key"
+    t.integer "va_admin_fee", default: 5000, null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
   add_foreign_key "invoices", "tenants"
+  add_foreign_key "payments", "invoices"
   add_foreign_key "properties", "users"
   add_foreign_key "rooms", "properties"
   add_foreign_key "sessions", "users"

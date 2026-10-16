@@ -10,6 +10,12 @@
     <%= link_to "Tambah properti", new_property_path, class: "btn-primary mt-4" %>
   </div>
 <% else %>
+  <% unless Current.user.midtrans_connected? %>
+    <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" id="connect_midtrans">
+      Penghuni belum bisa bayar online. <%= link_to "Hubungkan Midtrans", edit_payment_settings_path, class: "link" %>
+    </div>
+  <% end %>
+
   <div class="mt-6">
     <%= render "invoices/summary", summary: @summary %>
   </div>

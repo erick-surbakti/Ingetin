@@ -25,6 +25,12 @@ Rails.application.routes.draw do
 
   # Halaman tagihan untuk penghuni, dibuka dari link WhatsApp tanpa login.
   get "t/:token" => "public_invoices#show", as: :public_invoice
+  post "t/:token/payments" => "public_payments#create", as: :public_invoice_payments
+
+  resource :payment_settings, only: %i[ edit update ]
+
+  # Notifikasi pembayaran dari Midtrans (HTTP notification / webhook).
+  post "webhooks/midtrans" => "midtrans_webhooks#create", as: :midtrans_webhook
 
   # Health check untuk load balancer dan uptime monitor.
   get "up" => "rails/health#show", as: :rails_health_check
