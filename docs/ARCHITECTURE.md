@@ -16,7 +16,7 @@ Tidak memakai Redis: idempotensi dan anti-dobel ditangani unique index di databa
 
 ## 2. Multi-tenancy
 
-- Setiap data milik satu `Owner`. Semua query lewat relasi pemilik yang sedang login, misalnya `Current.owner.properties`, bukan `Property.find`.
+- Pemilik kos adalah model `User` (bawaan generator autentikasi Rails). Setiap data milik satu `User`. Semua query lewat relasi pemilik yang sedang login, misalnya `Current.user.properties`, bukan `Property.find`.
 - Halaman publik penghuni (tagihan, kuitansi) diakses lewat token acak yang tidak bisa ditebak (`has_secure_token`), bukan ID berurutan.
 - Wajib ada test isolasi: pemilik A tidak bisa membaca atau mengubah data pemilik B.
 
@@ -76,14 +76,14 @@ Setiap percobaan bayar memakai `order_id` unik (`<nomor tagihan>-<percobaan>`), 
 ## 8. Sketsa model data
 
 ```
-Owner ─┬─ Property ── Room ── Tenant ── Invoice ─┬─ InvoiceItem (P1)
+User ──┬─ Property ── Room ── Tenant ── Invoice ─┬─ InvoiceItem (P1)
        │                                         └─ Payment
        └─ MidtransCredential (terenkripsi)
 ```
 
 | Model | Kolom kunci |
 |---|---|
-| Owner | email, password_digest, plan, webhook_token |
+| User (pemilik kos) | name, email_address, password_digest, plan, webhook_token |
 | Property | owner_id, name, address |
 | Room | property_id, name, monthly_rent |
 | Tenant | room_id, name, phone, move_in_on, due_day, moved_out_on |

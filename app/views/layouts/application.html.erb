@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="id" class="h-full">
   <head>
-    <title><%= content_for(:title) || "Ingetin" %></title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} · Ingetin" : "Ingetin" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#1f7a55">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Ingetin">
     <meta name="mobile-web-app-capable" content="yes">
@@ -11,20 +12,29 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="min-h-full bg-stone-50 text-stone-900 antialiased">
+    <% if authenticated? %>
+      <header class="border-b border-stone-200 bg-white">
+        <div class="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
+          <%= link_to "Ingetin", root_path, class: "text-lg font-bold text-brand-700" %>
+          <div class="flex items-center gap-3">
+            <span class="hidden text-sm text-stone-600 sm:inline"><%= Current.user.name %></span>
+            <%= button_to "Keluar", session_path, method: :delete, class: "btn-secondary py-1.5" %>
+          </div>
+        </div>
+      </header>
+    <% end %>
+
+    <main class="mx-auto w-full max-w-2xl px-4 py-6">
+      <%= render "shared/flash" %>
       <%= yield %>
     </main>
   </body>

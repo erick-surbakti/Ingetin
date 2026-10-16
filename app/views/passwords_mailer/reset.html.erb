@@ -1,6 +1,8 @@
-<p>
-  You can reset your password on
-  <%= link_to "this password reset page", edit_password_url(@user.password_reset_token) %>.
+<p>Halo <%= @user.name %>,</p>
 
-  This link will expire in <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
+<p>
+  Atur ulang kata sandi Ingetin kamu lewat
+  <%= link_to "halaman ini", edit_password_url(@user.password_reset_token) %>.
 </p>
+
+<p>Link berlaku selama <%= @user.password_reset_token_expires_in.in_minutes.to_i %> menit. Abaikan email ini jika kamu tidak memintanya.</p>

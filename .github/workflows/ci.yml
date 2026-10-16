@@ -13,25 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Lewati job Ruby selama aplikasi Rails belum ada (repo masih tahap fondasi).
-  detect:
-    runs-on: ubuntu-latest
-    outputs:
-      has_app: ${{ steps.check.outputs.has_app }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: check
-        run: |
-          if [ -f Gemfile ]; then
-            echo "has_app=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_app=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Gemfile belum ada, job Ruby dilewati."
-          fi
-
   lint:
-    needs: detect
-    if: needs.detect.outputs.has_app == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,8 +24,6 @@ jobs:
         run: bin/rubocop -f github
 
   security:
-    needs: detect
-    if: needs.detect.outputs.has_app == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,14 +31,13 @@ jobs:
         with:
           bundler-cache: true
       - name: Brakeman
-        run: bin/brakeman --no-pager
+        run: .github/scripts/report "Brakeman" bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+      - name: Bundler audit
+        run: .github/scripts/report "Bundler audit" bin/bundler-audit
       - name: Importmap audit
-        if: hashFiles('bin/importmap') != ''
-        run: bin/importmap audit
+        run: .github/scripts/report "Importmap audit" bin/importmap audit
 
   test:
-    needs: detect
-    if: needs.detect.outputs.has_app == 'true'
     runs-on: ubuntu-latest
     env:
       RAILS_ENV: test
@@ -70,5 +49,9 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+      - name: Migrasi dari nol cocok dengan db/schema.rb
+        run: .github/scripts/report "Schema" bash -c 'bin/rails db:migrate && git diff --exit-code db/schema.rb'
       - name: Test
-        run: bin/rails db:test:prepare test
+        run: .github/scripts/report "Test" bin/rails test
+      - name: Seeds
+        run: .github/scripts/report "Seeds" bin/rails db:seed:replant
