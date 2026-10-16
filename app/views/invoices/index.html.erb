@@ -1,0 +1,26 @@
+<% content_for :title, "Tagihan" %>
+
+<div class="flex items-center justify-between gap-3">
+  <h1 class="page-title">Tagihan</h1>
+  <%= button_to "Buat tagihan jatuh tempo", generate_invoices_path, class: "btn-secondary" %>
+</div>
+
+<div class="mt-4 flex items-center justify-between">
+  <%= link_to "‹ Sebelumnya", invoices_path(month: @month.prev_month.strftime("%Y-%m")), class: "link text-sm" %>
+  <p class="font-semibold" id="selected_month"><%= l(@month, format: :month) %></p>
+  <%= link_to "Berikutnya ›", invoices_path(month: @month.next_month.strftime("%Y-%m")), class: "link text-sm" %>
+</div>
+
+<div class="mt-4">
+  <%= render "summary", summary: @summary %>
+</div>
+
+<% if @summary.invoices.empty? %>
+  <div class="card mt-6 text-center text-sm text-stone-600">
+    Belum ada tagihan bulan ini. Tagihan dibuat otomatis <%= InvoiceGenerator::LEAD_DAYS %> hari sebelum jatuh tempo.
+  </div>
+<% else %>
+  <ul class="mt-6 divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
+    <%= render partial: "invoice", collection: @summary.sorted %>
+  </ul>
+<% end %>

@@ -13,6 +13,19 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :invoices, only: :index do
+    collection do
+      post :generate
+    end
+    member do
+      post :mark_sent
+      patch :mark_paid
+    end
+  end
+
+  # Halaman tagihan untuk penghuni, dibuka dari link WhatsApp tanpa login.
+  get "t/:token" => "public_invoices#show", as: :public_invoice
+
   # Health check untuk load balancer dan uptime monitor.
   get "up" => "rails/health#show", as: :rails_health_check
 

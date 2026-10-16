@@ -1,0 +1,19 @@
+rina_october:
+  tenant: rina
+  period: 2026-10-01
+  due_on: 2026-10-10
+  amount: 1500000
+  description: Sewa Kos Melati kamar A1 Oktober 2026
+  status: paid
+  paid_at: 2026-10-09 10:00:00
+  paid_via: cash
+  public_token: rinaOktoberToken000000001
+
+joko_october:
+  tenant: joko
+  period: 2026-10-01
+  due_on: 2026-10-31
+  amount: 900000
+  description: Sewa Kos Mawar kamar B1 Oktober 2026
+  status: unpaid
+  public_token: jokoOktoberToken000000002

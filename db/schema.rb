@@ -10,7 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_160300) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_16_170000) do
+  create_table "invoices", force: :cascade do |t|
+    t.integer "tenant_id", null: false
+    t.date "period", null: false
+    t.date "due_on", null: false
+    t.integer "amount", null: false
+    t.string "description", null: false
+    t.string "status", default: "unpaid", null: false
+    t.datetime "paid_at"
+    t.string "paid_via"
+    t.string "public_token", null: false
+    t.datetime "last_sent_at"
+    t.integer "sent_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["public_token"], name: "index_invoices_on_public_token", unique: true
+    t.index ["status", "due_on"], name: "index_invoices_on_status_and_due_on"
+    t.index ["tenant_id", "period"], name: "index_invoices_on_tenant_id_and_period", unique: true
+    t.index ["tenant_id"], name: "index_invoices_on_tenant_id"
+    t.check_constraint "amount > 0", name: "invoices_amount_positive"
+    t.check_constraint "status IN ('unpaid', 'paid')", name: "invoices_status_valid"
+  end
+
   create_table "properties", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "name", null: false
@@ -64,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_160300) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "invoices", "tenants"
   add_foreign_key "properties", "users"
   add_foreign_key "rooms", "properties"
   add_foreign_key "sessions", "users"
