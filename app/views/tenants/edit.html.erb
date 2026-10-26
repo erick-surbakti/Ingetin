@@ -1,19 +1,19 @@
 <% content_for :title, "Ubah penghuni" %>
 
-<h1 class="page-title mb-6">Ubah data <%= @tenant.name_was %></h1>
-<%= render "form", tenant: @tenant, room_options: @room_options %>
+<div class="max-w-2xl">
+  <%= render "shared/page_header", back_path: tenants_path, back_label: "Penghuni", title: "Ubah data #{@tenant.name_was}" %>
+  <div class="card"><%= render "form", tenant: @tenant, room_options: @room_options %></div>
 
-<% if @tenant.active? %>
-  <div class="card mt-8">
-    <p class="font-semibold">Tandai keluar</p>
-    <p class="mt-1 text-sm text-stone-600">Kamar jadi kosong. Riwayat penghuni dan tagihannya tetap tersimpan.</p>
-    <%= form_with model: @tenant, url: move_out_tenant_path(@tenant), method: :patch, class: "mt-3 flex flex-wrap items-end gap-3",
-          data: { turbo_confirm: "Tandai #{@tenant.name_was} sudah keluar?" } do |form| %>
-      <div>
-        <%= form.label :moved_out_on, class: "label" %>
-        <%= form.date_field :moved_out_on, value: Date.current, required: true, class: "input" %>
-      </div>
-      <%= form.submit "Tandai keluar", class: "btn-danger" %>
+  <% if @tenant.active? %>
+    <%= render layout: "shared/danger_zone", locals: { title: "Tandai keluar", description: "Kamar jadi kosong. Riwayat penghuni dan tagihannya tetap tersimpan." } do %>
+      <%= form_with model: @tenant, url: move_out_tenant_path(@tenant), method: :patch, class: "flex flex-wrap items-end gap-3",
+            data: { turbo_confirm: "Tandai #{@tenant.name_was} sudah keluar?" } do |form| %>
+        <div>
+          <%= form.label :moved_out_on, class: "label" %>
+          <%= form.date_field :moved_out_on, value: Date.current, required: true, class: "input" %>
+        </div>
+        <%= form.submit "Tandai keluar", class: "btn-danger py-3" %>
+      <% end %>
     <% end %>
-  </div>
-<% end %>
+  <% end %>
+</div>

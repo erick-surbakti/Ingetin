@@ -20,6 +20,26 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "index filters invoices by status tab" do
+    joko = "##{dom_id(invoices(:joko_october))}"
+
+    travel_to Time.zone.local(2026, 10, 20, 9) do
+      get invoices_path(month: "2026-10", status: "pending")
+      assert_select joko
+      get invoices_path(month: "2026-10", status: "paid")
+      assert_select joko, count: 0
+      get invoices_path(month: "2026-10", status: "overdue")
+      assert_select joko, count: 0
+      get invoices_path(month: "2026-10", status: "bukan-status")
+      assert_select joko
+    end
+
+    travel_to Time.zone.local(2026, 11, 5, 9) do
+      get invoices_path(month: "2026-10", status: "overdue")
+      assert_select joko
+    end
+  end
+
   test "generate creates due invoices for the owner's tenants only" do
     travel_to Time.zone.local(2026, 11, 28, 9) do
       assert_difference -> { Invoice.count }, 1 do

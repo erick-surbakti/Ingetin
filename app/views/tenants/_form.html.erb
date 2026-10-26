@@ -1,4 +1,4 @@
-<%= form_with model: tenant, class: "space-y-4" do |form| %>
+<%= form_with model: tenant, class: "space-y-5" do |form| %>
   <%= render "shared/form_errors", record: tenant %>
 
   <div>
@@ -16,7 +16,7 @@
   <div>
     <%= form.label :room_id, "Kamar", class: "label" %>
     <% if room_options.empty? %>
-      <p class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+      <p class="rounded-xl border border-warning-50 bg-warning-50 px-4 py-3 text-sm font-semibold text-warning-700">
         Tidak ada kamar kosong. <%= link_to "Tambah kamar", properties_path, class: "link" %> dulu.
       </p>
     <% else %>
@@ -37,7 +37,7 @@
   </div>
   <p class="hint -mt-2">Tanggal jatuh tempo tiap bulan. Kosongkan untuk memakai tanggal masuk.</p>
 
-  <div class="flex gap-3">
+  <div class="flex flex-wrap gap-3 border-t border-line pt-5">
     <%= form.submit class: "btn-primary" %>
     <%= link_to "Batal", tenants_path, class: "btn-secondary" %>
   </div>

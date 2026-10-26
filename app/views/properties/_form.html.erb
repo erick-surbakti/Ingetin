@@ -1,4 +1,4 @@
-<%= form_with model: property, class: "space-y-4" do |form| %>
+<%= form_with model: property, class: "space-y-5" do |form| %>
   <%= render "shared/form_errors", record: property %>
 
   <div>
@@ -12,7 +12,7 @@
     <p class="hint">Opsional.</p>
   </div>
 
-  <div class="flex gap-3">
+  <div class="flex flex-wrap gap-3 border-t border-line pt-5">
     <%= form.submit class: "btn-primary" %>
     <%= link_to "Batal", property.persisted? ? property_path(property) : properties_path, class: "btn-secondary" %>
   </div>

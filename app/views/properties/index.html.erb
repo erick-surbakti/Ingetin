@@ -1,24 +1,44 @@
 <% content_for :title, "Properti" %>
 
-<div class="flex items-center justify-between gap-3">
-  <h1 class="page-title">Properti</h1>
-  <%= link_to "Tambah", new_property_path, class: "btn-primary" %>
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <p class="text-sm font-medium text-muted">Rumah kos</p>
+    <h1 class="page-title mt-0.5">Properti</h1>
+  </div>
+  <%= link_to new_property_path, class: "btn-primary" do %>
+    <%= icon(:plus, class: "size-4", stroke: 2.5) %> Tambah
+  <% end %>
 </div>
 
 <% if @properties.empty? %>
-  <div class="card mt-6 text-center text-sm text-stone-600">Belum ada properti.</div>
+  <div class="empty-state mt-6">
+    <span class="mb-2 flex size-10 items-center justify-center rounded-full bg-brand-50 text-brand-600"><%= icon(:building) %></span>
+    Belum ada properti.
+  </div>
 <% else %>
-  <ul class="mt-6 space-y-3">
+  <ul class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
     <% @properties.each do |property| %>
+      <% rooms = property.rooms.to_a %>
+      <% vacant = rooms.count(&:vacant?) %>
       <li>
-        <%= link_to property_path(property), class: "card block hover:border-brand-600", id: dom_id(property) do %>
-          <p class="font-semibold"><%= property.name %></p>
-          <% if property.address.present? %>
-            <p class="mt-0.5 text-sm text-stone-600"><%= property.address %></p>
-          <% end %>
-          <p class="mt-2 text-sm text-stone-600">
-            <%= property.rooms.size %> kamar · <%= property.rooms.to_a.count(&:vacant?) %> kosong
-          </p>
+        <%= link_to property_path(property), class: "group block overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:-translate-y-0.5 hover:shadow-md", id: dom_id(property) do %>
+          <div class="relative flex h-28 items-end overflow-hidden bg-brand-600 p-4">
+            <div class="pointer-events-none absolute -top-10 -right-8 size-36 rounded-full bg-white/5"></div>
+            <div class="pointer-events-none absolute -right-16 -bottom-20 size-40 rounded-full bg-white/5"></div>
+            <span class="relative flex size-11 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur"><%= icon(:building, class: "size-6") %></span>
+            <span class="badge absolute top-4 right-4 bg-white text-brand-600"><%= rooms.size %> kamar</span>
+          </div>
+          <div class="p-4">
+            <p class="truncate font-bold"><%= property.name %></p>
+            <p class="mt-1 flex items-center gap-1 truncate text-xs text-muted">
+              <%= icon(:pin, class: "size-3.5 shrink-0") %>
+              <span class="truncate"><%= property.address.presence || "Alamat belum diisi" %></span>
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
+              <span class="badge bg-success-50 text-success-700"><%= rooms.size - vacant %> terisi</span>
+              <span class="badge <%= vacant.positive? ? "bg-warning-50 text-warning-700" : "bg-canvas text-muted" %>"><%= vacant %> kosong</span>
+            </div>
+          </div>
         <% end %>
       </li>
     <% end %>

@@ -1,36 +1,45 @@
 <% content_for :title, "Penghuni" %>
 
-<div class="flex items-center justify-between gap-3">
-  <h1 class="page-title">Penghuni</h1>
-  <%= link_to "Tambah", new_tenant_path, class: "btn-primary" %>
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <p class="text-sm font-medium text-muted">Data penghuni</p>
+    <h1 class="page-title mt-0.5">Penghuni</h1>
+  </div>
+  <%= link_to new_tenant_path, class: "btn-primary" do %>
+    <%= icon(:plus, class: "size-4", stroke: 2.5) %> Tambah
+  <% end %>
 </div>
 
-<div class="mt-4 flex gap-1 text-sm font-medium">
-  <%= link_to "Aktif", tenants_path, class: "rounded-md px-3 py-1.5 #{@status == "active" ? "bg-brand-50 text-brand-700" : "text-stone-600 hover:bg-stone-100"}" %>
-  <%= link_to "Sudah keluar", tenants_path(status: "moved_out"), class: "rounded-md px-3 py-1.5 #{@status == "moved_out" ? "bg-brand-50 text-brand-700" : "text-stone-600 hover:bg-stone-100"}" %>
-</div>
+<nav class="mt-5 flex gap-2" aria-label="Filter penghuni">
+  <%= link_to "Aktif", tenants_path, class: (@status == "active" ? "chip-active" : "chip-idle") %>
+  <%= link_to "Sudah keluar", tenants_path(status: "moved_out"), class: (@status == "moved_out" ? "chip-active" : "chip-idle") %>
+</nav>
 
 <% if @tenants.empty? %>
-  <div class="card mt-4 text-center text-sm text-stone-600">
+  <div class="empty-state mt-4">
+    <span class="mb-2 flex size-10 items-center justify-center rounded-full bg-brand-50 text-brand-600"><%= icon(:users) %></span>
     <%= @status == "active" ? "Belum ada penghuni aktif." : "Belum ada penghuni yang keluar." %>
   </div>
 <% else %>
-  <ul class="mt-4 divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
+  <ul class="mt-4 grid gap-3 lg:grid-cols-2">
     <% @tenants.each do |tenant| %>
-      <li class="flex items-center justify-between gap-3 px-4 py-3" id="<%= dom_id(tenant) %>">
-        <div class="min-w-0">
-          <p class="truncate font-medium"><%= tenant.name %></p>
-          <p class="text-sm text-stone-600">
-            <%= tenant.room.property.name %> · <%= tenant.room.name %>
+      <li class="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-soft" id="<%= dom_id(tenant) %>">
+        <span class="avatar size-11 <%= "opacity-60" unless tenant.active? %>"><%= initials(tenant.name) %></span>
+        <div class="min-w-0 flex-1">
+          <p class="truncate font-bold"><%= tenant.name %></p>
+          <p class="truncate text-xs text-muted"><%= tenant.room.property.name %> · Kamar <%= tenant.room.name %></p>
+          <p class="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
             <% if tenant.active? %>
-              · jatuh tempo tgl <%= tenant.due_day %>
+              <span class="badge bg-brand-50 text-brand-600">Jatuh tempo tgl <%= tenant.due_day %></span>
             <% else %>
-              · keluar <%= l(tenant.moved_out_on, format: :long) %>
+              <span class="badge bg-canvas text-muted">Keluar <%= l(tenant.moved_out_on, format: :long) %></span>
             <% end %>
+            <span><%= phone_display(tenant.phone) %></span>
           </p>
-          <p class="text-sm text-stone-500"><%= phone_display(tenant.phone) %></p>
         </div>
-        <%= link_to "Ubah", edit_tenant_path(tenant), class: "btn-secondary shrink-0 py-1.5" %>
+        <%= link_to edit_tenant_path(tenant), class: "rounded-lg p-2 text-muted hover:bg-canvas hover:text-ink", title: "Ubah #{tenant.name}", aria: { label: "Ubah #{tenant.name}" } do %>
+          <%= icon(:pencil, class: "size-4") %>
+        <% end %>
       </li>
     <% end %>
   </ul>

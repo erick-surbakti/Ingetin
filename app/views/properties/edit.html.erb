@@ -1,11 +1,11 @@
 <% content_for :title, "Ubah properti" %>
 
-<h1 class="page-title mb-6">Ubah properti</h1>
-<%= render "form", property: @property %>
+<div class="max-w-2xl">
+  <%= render "shared/page_header", back_path: property_path(@property), back_label: @property.name_was, title: "Ubah properti" %>
+  <div class="card"><%= render "form", property: @property %></div>
 
-<div class="card mt-8">
-  <p class="font-semibold">Hapus properti</p>
-  <p class="mt-1 text-sm text-stone-600">Hanya bisa dihapus jika belum ada kamar.</p>
-  <%= button_to "Hapus properti", property_path(@property), method: :delete, class: "btn-danger mt-3",
-        form: { data: { turbo_confirm: "Hapus #{@property.name}?" } } %>
+  <%= render layout: "shared/danger_zone", locals: { title: "Hapus properti", description: "Hanya bisa dihapus jika belum ada kamar." } do %>
+    <%= button_to "Hapus properti", property_path(@property), method: :delete, class: "btn-danger",
+          form: { data: { turbo_confirm: "Hapus #{@property.name}?" } } %>
+  <% end %>
 </div>
