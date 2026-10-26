@@ -1,0 +1,10 @@
+<%# Header halaman form: link kembali, judul, dan keterangan opsional. %>
+<div class="mb-6">
+  <%= link_to back_path, class: "inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-ink" do %>
+    <%= icon(:chevron_left, class: "size-4", stroke: 2) %> <%= back_label %>
+  <% end %>
+  <h1 class="page-title mt-2"><%= title %></h1>
+  <% if local_assigns[:subtitle].present? %>
+    <p class="mt-1 text-sm text-muted"><%= subtitle %></p>
+  <% end %>
+</div>

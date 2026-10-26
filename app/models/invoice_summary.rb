@@ -26,6 +26,23 @@ class InvoiceSummary
     unpaid.sum(&:amount)
   end
 
+  FILTERS = %w[ all pending overdue paid ].freeze
+
+  # Belum bayar yang belum lewat jatuh tempo.
+  def pending
+    unpaid - overdue
+  end
+
+  # Tagihan untuk tab filter di halaman Tagihan, urut seperti #sorted.
+  def filtered(status)
+    case status
+    when "pending" then sorted.select { |invoice| invoice.unpaid? && !invoice.overdue?(@today) }
+    when "overdue" then sorted.select { |invoice| invoice.overdue?(@today) }
+    when "paid" then sorted.select(&:paid?)
+    else sorted
+    end
+  end
+
   # Telat dulu, lalu belum bayar menurut jatuh tempo, lalu lunas.
   def sorted
     invoices.sort_by do |invoice|

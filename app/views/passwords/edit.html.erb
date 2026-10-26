@@ -1,9 +1,9 @@
 <% content_for :title, "Kata sandi baru" %>
 
-<div class="mx-auto max-w-sm pt-8">
+<%= render layout: "shared/auth_shell" do %>
   <h1 class="page-title">Buat kata sandi baru</h1>
 
-  <%= form_with url: password_path(params[:token]), method: :put, class: "mt-6 space-y-4" do |form| %>
+  <%= form_with url: password_path(params[:token]), method: :put, class: "mt-7 space-y-5" do |form| %>
     <div>
       <%= form.label :password, "Kata sandi baru", class: "label" %>
       <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
@@ -15,6 +15,6 @@
       <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
     </div>
 
-    <%= form.submit "Simpan", class: "btn-primary w-full" %>
+    <%= form.submit "Simpan", class: "btn-primary w-full py-3.5" %>
   <% end %>
-</div>
+<% end %>

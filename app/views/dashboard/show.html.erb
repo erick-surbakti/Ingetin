@@ -1,46 +1,67 @@
 <% content_for :title, "Dasbor" %>
 
-<h1 class="page-title">Halo, <%= Current.user.name %></h1>
-<p class="mt-1 text-sm text-stone-600">Ringkasan tagihan <%= l(@month, format: :month) %>.</p>
+<div class="flex flex-wrap items-end justify-between gap-3">
+  <div>
+    <p class="text-sm font-medium text-muted"><%= l(Date.current, format: :long) %></p>
+    <h1 class="page-title mt-0.5">Halo, <%= Current.user.name %></h1>
+  </div>
+</div>
 
 <% if @property_count.zero? %>
-  <div class="card mt-6 text-center">
-    <p class="font-semibold">Belum ada properti</p>
-    <p class="mt-1 text-sm text-stone-600">Tambahkan rumah kos dan kamar untuk mulai membuat tagihan.</p>
-    <%= link_to "Tambah properti", new_property_path, class: "btn-primary mt-4" %>
+  <div class="card mt-6 flex flex-col items-center px-6 py-10 text-center">
+    <span class="flex size-14 items-center justify-center rounded-2xl bg-brand-600 text-white"><%= icon(:building, class: "size-7") %></span>
+    <p class="mt-4 text-lg font-bold">Belum ada properti</p>
+    <p class="mt-1 max-w-sm text-sm text-muted">Tambahkan rumah kos dan kamar untuk mulai membuat tagihan.</p>
+    <%= link_to new_property_path, class: "btn-primary mt-5" do %>
+      <%= icon(:plus, class: "size-4", stroke: 2.5) %> Tambah properti
+    <% end %>
   </div>
 <% else %>
   <% unless Current.user.midtrans_connected? %>
-    <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" id="connect_midtrans">
-      Penghuni belum bisa bayar online. <%= link_to "Hubungkan Midtrans", edit_payment_settings_path, class: "link" %>
+    <div class="mt-5 flex items-start gap-3 rounded-2xl border border-line bg-white p-4 text-sm shadow-soft" id="connect_midtrans">
+      <span class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-warning-50 text-warning-700"><%= icon(:info) %></span>
+      <div class="min-w-0">
+        <p class="font-bold">Penghuni belum bisa bayar online</p>
+        <p class="mt-0.5 text-muted">Hubungkan akun Midtrans supaya penghuni bisa bayar lewat QRIS atau Virtual Account.</p>
+        <%= link_to "Hubungkan Midtrans", edit_payment_settings_path, class: "link mt-2 inline-block" %>
+      </div>
     </div>
   <% end %>
 
-  <div class="mt-6">
-    <%= render "invoices/summary", summary: @summary %>
-  </div>
+  <div class="mt-6 grid gap-6 lg:grid-cols-5">
+    <section class="lg:col-span-2" aria-label="Ringkasan bulan ini">
+      <%= render "invoices/summary", summary: @summary, summary_month: @month, show_link: true %>
+    </section>
 
-  <div class="mt-8 flex items-center justify-between">
-    <h2 class="text-lg font-semibold">Belum bayar</h2>
-    <%= link_to "Semua tagihan", invoices_path, class: "link text-sm" %>
-  </div>
+    <section class="lg:col-span-3">
+      <div class="flex items-center justify-between">
+        <h2 class="section-title">Belum bayar</h2>
+        <%= link_to "Semua tagihan", invoices_path, class: "text-sm font-semibold text-muted hover:text-ink" %>
+      </div>
 
-  <% unpaid = @summary.sorted.select(&:unpaid?) %>
-  <% if unpaid.empty? %>
-    <div class="card mt-3 text-center text-sm text-stone-600" id="all_paid">
-      <%= @summary.invoices.empty? ? "Belum ada tagihan bulan ini." : "Semua tagihan bulan ini sudah lunas." %>
-    </div>
-  <% else %>
-    <ul class="mt-3 divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white" id="unpaid_invoices">
-      <% unpaid.each do |invoice| %>
-        <li class="flex items-center justify-between gap-3 px-4 py-3" id="<%= dom_id(invoice) %>">
-          <div class="min-w-0">
-            <p class="truncate font-medium"><%= invoice.tenant.name %></p>
-            <p class="text-sm text-stone-600"><%= invoice.tenant.room.name %> · <%= rupiah(invoice.amount) %> · <%= l(invoice.due_on, format: :short) %></p>
-          </div>
-          <%= invoice_status_badge(invoice) %>
-        </li>
+      <% unpaid = @summary.sorted.select(&:unpaid?) %>
+      <% if unpaid.empty? %>
+        <div class="empty-state mt-3" id="all_paid">
+          <span class="mb-2 flex size-10 items-center justify-center rounded-full bg-success-50 text-success-700"><%= icon(:check, stroke: 2.5) %></span>
+          <%= @summary.invoices.empty? ? "Belum ada tagihan bulan ini." : "Semua tagihan bulan ini sudah lunas." %>
+        </div>
+      <% else %>
+        <ul class="list-card mt-3" id="unpaid_invoices">
+          <% unpaid.each do |invoice| %>
+            <li class="flex items-center gap-3 px-4 py-3.5" id="<%= dom_id(invoice) %>">
+              <span class="avatar"><%= initials(invoice.tenant.name) %></span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-bold"><%= invoice.tenant.name %></p>
+                <p class="truncate text-xs text-muted"><%= invoice.tenant.room.name %> · jatuh tempo <%= l(invoice.due_on, format: :short) %></p>
+              </div>
+              <div class="flex shrink-0 flex-col items-end gap-1">
+                <p class="text-sm font-bold"><%= rupiah(invoice.amount) %></p>
+                <%= invoice_status_badge(invoice) %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
       <% end %>
-    </ul>
-  <% end %>
+    </section>
+  </div>
 <% end %>

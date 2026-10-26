@@ -5,6 +5,8 @@ class InvoicesController < ApplicationController
     @month = selected_month
     invoices = Current.user.invoices.for_period(@month).includes(tenant: { room: { property: :user } })
     @summary = InvoiceSummary.new(invoices)
+    @status = params[:status].presence_in(InvoiceSummary::FILTERS) || "all"
+    @invoices = @summary.filtered(@status)
   end
 
   def generate

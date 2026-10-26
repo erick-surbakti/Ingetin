@@ -1,26 +1,57 @@
 <% content_for :title, "Tagihan" %>
 
-<div class="flex items-center justify-between gap-3">
-  <h1 class="page-title">Tagihan</h1>
-  <%= button_to "Buat tagihan jatuh tempo", generate_invoices_path, class: "btn-secondary" %>
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <p class="text-sm font-medium text-muted">Penagihan</p>
+    <h1 class="page-title mt-0.5">Tagihan</h1>
+  </div>
+  <%= button_to generate_invoices_path, class: "btn-secondary" do %>
+    <%= icon(:refresh, class: "size-4", stroke: 2) %> Buat tagihan jatuh tempo
+  <% end %>
 </div>
 
-<div class="mt-4 flex items-center justify-between">
-  <%= link_to "‹ Sebelumnya", invoices_path(month: @month.prev_month.strftime("%Y-%m")), class: "link text-sm" %>
-  <p class="font-semibold" id="selected_month"><%= l(@month, format: :month) %></p>
-  <%= link_to "Berikutnya ›", invoices_path(month: @month.next_month.strftime("%Y-%m")), class: "link text-sm" %>
+<div class="mt-5 flex items-center justify-between gap-2 rounded-2xl border border-line bg-white p-1.5 shadow-soft sm:inline-flex sm:justify-start">
+  <%= link_to invoices_path(month: @month.prev_month.strftime("%Y-%m"), status: @status),
+        class: "rounded-xl p-2 text-muted hover:bg-canvas hover:text-ink", title: "Bulan sebelumnya", aria: { label: "Bulan sebelumnya" } do %>
+    <%= icon(:chevron_left, stroke: 2) %>
+  <% end %>
+  <p class="flex items-center gap-2 px-3 font-bold" id="selected_month"><%= l(@month, format: :month) %></p>
+  <%= link_to invoices_path(month: @month.next_month.strftime("%Y-%m"), status: @status),
+        class: "rounded-xl p-2 text-muted hover:bg-canvas hover:text-ink", title: "Bulan berikutnya", aria: { label: "Bulan berikutnya" } do %>
+    <%= icon(:chevron_right, stroke: 2) %>
+  <% end %>
 </div>
 
-<div class="mt-4">
-  <%= render "summary", summary: @summary %>
+<div class="mt-5">
+  <%= render "summary", summary: @summary, summary_month: @month, wide: true %>
 </div>
+
+<% tabs = { "all" => [ "Semua", @summary.invoices.size ], "pending" => [ "Belum bayar", @summary.pending.size ],
+            "overdue" => [ "Telat", @summary.overdue.size ], "paid" => [ "Lunas", @summary.paid.size ] } %>
+<nav class="-mx-4 mt-7 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0" aria-label="Filter status">
+  <% tabs.each do |key, (label, count)| %>
+    <%= link_to invoices_path(month: @month.strftime("%Y-%m"), status: (key == "all" ? nil : key)),
+          class: (@status == key ? "chip-active" : "chip-idle"), aria: { current: (@status == key ? "page" : nil) } do %>
+      <%= label %>
+      <span class="rounded-full px-1.5 text-xs <%= @status == key ? "bg-white/20" : "bg-canvas" %>"><%= count %></span>
+    <% end %>
+  <% end %>
+</nav>
 
 <% if @summary.invoices.empty? %>
-  <div class="card mt-6 text-center text-sm text-stone-600">
+  <div class="empty-state mt-4">
+    <span class="mb-2 flex size-10 items-center justify-center rounded-full bg-brand-50 text-brand-600"><%= icon(:calendar) %></span>
     Belum ada tagihan bulan ini. Tagihan dibuat otomatis <%= InvoiceGenerator::LEAD_DAYS %> hari sebelum jatuh tempo.
   </div>
+<% elsif @invoices.empty? %>
+  <div class="empty-state mt-4">Tidak ada tagihan dengan status ini.</div>
 <% else %>
-  <ul class="mt-6 divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
-    <%= render partial: "invoice", collection: @summary.sorted %>
-  </ul>
+  <div class="list-card mt-4">
+    <div class="hidden grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,0.8fr)_auto] gap-4 bg-canvas px-5 py-3 text-xs font-semibold tracking-wide text-muted uppercase lg:grid">
+      <span>Penghuni</span><span>Jumlah</span><span>Jatuh tempo</span><span>Status</span><span class="w-56 text-right">Aksi</span>
+    </div>
+    <ul class="divide-y divide-line">
+      <%= render partial: "invoice", collection: @invoices %>
+    </ul>
+  </div>
 <% end %>

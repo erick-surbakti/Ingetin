@@ -2,8 +2,8 @@
 <html lang="id" class="h-full">
   <head>
     <title><%= content_for?(:title) ? "#{yield(:title)} · Ingetin" : "Ingetin" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#1f7a55">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#24312f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Ingetin">
     <meta name="mobile-web-app-capable" content="yes">
@@ -16,33 +16,81 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-full bg-stone-50 text-stone-900 antialiased">
+  <body class="min-h-full bg-canvas font-sans text-ink antialiased">
     <% if authenticated? %>
-      <header class="border-b border-stone-200 bg-white">
-        <div class="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
-          <%= link_to "Ingetin", root_path, class: "text-lg font-bold text-brand-700" %>
-          <div class="flex items-center gap-3">
-            <span class="hidden text-sm text-stone-600 sm:inline"><%= Current.user.name %></span>
-            <%= button_to "Keluar", session_path, method: :delete, class: "btn-secondary py-1.5" %>
+      <%# Sidebar laptop %>
+      <aside class="no-print fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-white px-4 py-6 lg:flex">
+        <%= link_to root_path, class: "flex items-center gap-2.5 px-2" do %>
+          <span class="flex size-9 items-center justify-center rounded-xl bg-brand-600 text-white"><%= icon(:home, class: "size-5") %></span>
+          <span class="text-lg font-extrabold tracking-tight text-ink">Ingetin</span>
+        <% end %>
+
+        <nav class="mt-8 flex flex-col gap-1" aria-label="Menu utama">
+          <%= nav_link "Dasbor", root_path, :home %>
+          <%= nav_link "Tagihan", invoices_path, :document %>
+          <%= nav_link "Properti", properties_path, :building %>
+          <%= nav_link "Penghuni", tenants_path, :users %>
+          <%= nav_link "Pembayaran", edit_payment_settings_path, :card %>
+        </nav>
+
+        <div class="mt-auto flex items-center gap-3 rounded-2xl bg-canvas p-3">
+          <span class="avatar bg-white"><%= initials(Current.user.name) %></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-bold"><%= Current.user.name %></p>
+            <p class="truncate text-xs text-muted">Pemilik kos</p>
+          </div>
+          <%= button_to session_path, method: :delete, class: "rounded-lg p-2 text-muted hover:bg-white hover:text-ink", title: "Keluar", aria: { label: "Keluar" } do %>
+            <%= icon(:logout) %>
+          <% end %>
+        </div>
+      </aside>
+
+      <%# Bar atas HP %>
+      <header class="no-print sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur lg:hidden">
+        <div class="flex items-center justify-between px-4 py-3">
+          <%= link_to root_path, class: "flex items-center gap-2" do %>
+            <span class="flex size-8 items-center justify-center rounded-lg bg-brand-600 text-white"><%= icon(:home, class: "size-4") %></span>
+            <span class="text-base font-extrabold tracking-tight">Ingetin</span>
+          <% end %>
+          <div class="flex items-center gap-2">
+            <span class="avatar size-8 bg-white text-xs ring-1 ring-line"><%= initials(Current.user.name) %></span>
+            <%= button_to session_path, method: :delete, class: "rounded-lg p-2 text-muted hover:bg-white hover:text-ink", title: "Keluar", aria: { label: "Keluar" } do %>
+              <%= icon(:logout) %>
+            <% end %>
           </div>
         </div>
-        <nav class="mx-auto flex max-w-2xl gap-1 overflow-x-auto px-4 pb-2 text-sm font-medium">
-          <%= nav_link "Dasbor", root_path %>
-          <%= nav_link "Tagihan", invoices_path %>
-          <%= nav_link "Properti", properties_path %>
-          <%= nav_link "Penghuni", tenants_path %>
-          <%= nav_link "Pembayaran", edit_payment_settings_path %>
-        </nav>
       </header>
-    <% end %>
 
-    <main class="mx-auto w-full max-w-2xl px-4 py-6">
-      <%= render "shared/flash" %>
-      <%= yield %>
-    </main>
+      <div class="lg:pl-64">
+        <main class="mx-auto w-full max-w-6xl px-4 pt-5 pb-28 sm:px-6 lg:px-10 lg:pt-10 lg:pb-12">
+          <%= render "shared/flash" %>
+          <%= yield %>
+        </main>
+      </div>
+
+      <%# Menu bawah HP %>
+      <nav class="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Menu utama">
+        <div class="mx-auto flex max-w-lg px-2">
+          <%= nav_link "Dasbor", root_path, :home, variant: :bottom %>
+          <%= nav_link "Tagihan", invoices_path, :document, variant: :bottom %>
+          <%= nav_link "Properti", properties_path, :building, variant: :bottom %>
+          <%= nav_link "Penghuni", tenants_path, :users, variant: :bottom %>
+          <%= nav_link "Bayar", edit_payment_settings_path, :card, variant: :bottom %>
+        </div>
+      </nav>
+    <% else %>
+      <main class="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+    <% end %>
   </body>
 </html>

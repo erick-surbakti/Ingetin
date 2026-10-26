@@ -1,4 +1,6 @@
 <% content_for :title, "Tambah penghuni" %>
 
-<h1 class="page-title mb-6">Tambah penghuni</h1>
-<%= render "form", tenant: @tenant, room_options: @room_options %>
+<div class="max-w-2xl">
+  <%= render "shared/page_header", back_path: tenants_path, back_label: "Penghuni", title: "Tambah penghuni" %>
+  <div class="card"><%= render "form", tenant: @tenant, room_options: @room_options %></div>
+</div>

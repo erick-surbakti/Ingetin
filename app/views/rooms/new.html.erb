@@ -1,12 +1,14 @@
 <% content_for :title, "Tambah kamar" %>
 
-<h1 class="page-title">Tambah kamar</h1>
-<p class="mb-6 mt-1 text-sm text-stone-600"><%= @property.name %></p>
+<div class="max-w-2xl">
+  <%= render "shared/page_header", back_path: property_path(@property), back_label: @property.name, title: "Tambah kamar", subtitle: @property.name %>
 
-<% if Current.user.room_limit_reached? %>
-  <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-    Paket Gratis maksimal <%= User::FREE_ROOM_LIMIT %> kamar. Upgrade ke Pro untuk menambah kamar.
-  </div>
-<% end %>
+  <% if Current.user.room_limit_reached? %>
+    <div class="mb-4 flex items-start gap-2.5 rounded-xl border border-warning-50 bg-warning-50 px-4 py-3 text-sm font-semibold text-warning-700">
+      <%= icon(:info, class: "mt-0.5 size-4 shrink-0", stroke: 2) %>
+      <span>Paket Gratis maksimal <%= User::FREE_ROOM_LIMIT %> kamar. Upgrade ke Pro untuk menambah kamar.</span>
+    </div>
+  <% end %>
 
-<%= render "form", property: @property, room: @room %>
+  <div class="card"><%= render "form", property: @property, room: @room %></div>
+</div>
