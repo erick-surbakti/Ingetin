@@ -88,7 +88,7 @@
       <div class="flex items-center gap-3">
         <span class="avatar size-11"><%= initials(tenant.name) %></span>
         <div class="min-w-0 flex-1">
-          <p class="truncate font-bold"><%= tenant.name %></p>
+          <%= link_to tenant.name, tenant_path(tenant), class: "block truncate font-bold hover:underline", title: "Riwayat #{tenant.name}" %>
           <p class="truncate text-xs text-muted"><%= room.property.name %> · Kamar <%= room.name %></p>
         </div>
         <%= invoice_status_badge(@invoice) %>

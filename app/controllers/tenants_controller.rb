@@ -1,10 +1,16 @@
 class TenantsController < ApplicationController
-  before_action :set_tenant, only: %i[ edit update move_out ]
+  before_action :set_tenant, only: %i[ show edit update move_out ]
 
   def index
     @status = params[:status] == "moved_out" ? "moved_out" : "active"
     scope = Current.user.tenants.includes(room: :property)
     @tenants = (@status == "active" ? scope.active : scope.moved_out).order(:name)
+  end
+
+  def show
+    @invoices = @tenant.invoices.includes(:items).order(period: :desc).to_a
+    @paid_total = @invoices.select(&:paid?).sum(&:amount)
+    @late_count = @invoices.count { |invoice| invoice.overdue? || (invoice.paid? && invoice.paid_at.to_date > invoice.due_on) }
   end
 
   def new

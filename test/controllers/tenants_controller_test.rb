@@ -70,4 +70,30 @@ class TenantsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert tenants(:joko).reload.active?
   end
+
+  test "show lists the tenant's invoice history, newest first" do
+    rina = tenants(:rina)
+    september = rina.invoices.create!(period: Date.new(2026, 9, 1), due_on: Date.new(2026, 9, 10), amount: 1_500_000,
+      description: "Sewa Kos Melati kamar A1 September 2026", status: "paid", paid_at: Time.zone.local(2026, 9, 12, 9), paid_via: "qris")
+
+    get tenant_path(rina)
+
+    assert_response :success
+    assert_select "h1", "Rina"
+    assert_select "#paid_total", "Rp3.000.000"
+    assert_select "#invoice_count", "2"
+    assert_select "#late_count", "1x"
+    ids = css_select("#invoice_history li").map { |li| li["id"] }
+    assert_equal [ dom_id(invoices(:rina_october), :history), dom_id(september, :history) ], ids
+  end
+
+  test "index links each tenant to their history" do
+    get tenants_path
+    assert_select "##{dom_id(tenants(:rina))} a[href='#{tenant_path(tenants(:rina))}']"
+  end
+
+  test "another owner's tenant history is not accessible" do
+    get tenant_path(tenants(:joko))
+    assert_response :not_found
+  end
 end

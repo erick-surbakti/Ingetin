@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     resources :rooms, except: %i[ index show ]
   end
 
-  resources :tenants, except: %i[ show destroy ] do
+  resources :tenants, except: %i[ destroy ] do
     member do
       patch :move_out
     end
