@@ -24,4 +24,11 @@ class InvoiceMessageTest < ActiveSupport::TestCase
     assert url.start_with?("https://wa.me/6285700000000?text=Halo%20Joko%2C")
     assert_equal message.text, CGI.unescape(URI.parse(url).query.delete_prefix("text=").gsub("+", "%2B"))
   end
+
+  test "mentions extra charges included in the total" do
+    @invoice.add_item!(name: "Listrik", amount: 75_000)
+    message = InvoiceMessage.new(@invoice, link: "https://ingetin.test/t/abc", today: Date.new(2026, 10, 28))
+
+    assert_includes message.text, "sebesar Rp975.000 (termasuk Listrik Rp75.000), jatuh tempo"
+  end
 end

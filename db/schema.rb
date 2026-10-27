@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_180100) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_27_090000) do
+  create_table "invoice_items", force: :cascade do |t|
+    t.integer "invoice_id", null: false
+    t.string "name", null: false
+    t.integer "amount", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_invoice_items_on_invoice_id"
+    t.check_constraint "amount > 0", name: "invoice_items_amount_positive"
+  end
+
   create_table "invoices", force: :cascade do |t|
     t.integer "tenant_id", null: false
     t.date "period", null: false
@@ -111,6 +121,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_180100) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "invoice_items", "invoices"
   add_foreign_key "invoices", "tenants"
   add_foreign_key "payments", "invoices"
   add_foreign_key "properties", "users"

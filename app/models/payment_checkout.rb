@@ -23,13 +23,15 @@ class PaymentCheckout
   end
 
   private
+    # Hanya transaksi dengan nominal tagihan saat ini; nominal bisa berubah
+    # setelah pemilik menambah biaya tambahan.
     def reusable_payment
       @invoice.payments
         .where(channel: @channel, status: %w[ created pending ])
         .where(expires_at: Time.current..)
         .where.not(redirect_url: nil)
         .order(created_at: :desc)
-        .first
+        .detect { |payment| payment.gross_amount == @invoice.amount + payment.admin_fee }
     end
 
     def create_payment(owner)
@@ -52,7 +54,10 @@ class PaymentCheckout
 
     def payload(payment)
       tenant = @invoice.tenant
-      items = [ { id: "SEWA-#{@invoice.id}", price: @invoice.amount, quantity: 1, name: @invoice.description.truncate(50) } ]
+      items = [ { id: "SEWA-#{@invoice.id}", price: @invoice.rent_amount, quantity: 1, name: @invoice.description.truncate(50) } ]
+      @invoice.items.each do |item|
+        items << { id: "ITEM-#{item.id}", price: item.amount, quantity: 1, name: item.name.truncate(50) }
+      end
       if payment.admin_fee.positive?
         items << { id: "ADMIN-VA", price: payment.admin_fee, quantity: 1, name: "Biaya admin Virtual Account" }
       end

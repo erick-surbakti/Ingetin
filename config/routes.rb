@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :invoices, only: :index do
+  resources :invoices, only: %i[ index show ] do
     collection do
       post :generate
     end
@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       post :mark_sent
       patch :mark_paid
     end
+    resources :items, controller: "invoice_items", only: %i[ create destroy ]
   end
 
   # Halaman tagihan untuk penghuni, dibuka dari link WhatsApp tanpa login.

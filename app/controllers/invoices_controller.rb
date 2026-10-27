@@ -1,12 +1,16 @@
 class InvoicesController < ApplicationController
-  before_action :set_invoice, only: %i[ mark_sent mark_paid ]
+  before_action :set_invoice, only: %i[ show mark_sent mark_paid ]
 
   def index
     @month = selected_month
-    invoices = Current.user.invoices.for_period(@month).includes(tenant: { room: { property: :user } })
+    invoices = Current.user.invoices.for_period(@month).includes(:items, tenant: { room: { property: :user } })
     @summary = InvoiceSummary.new(invoices)
     @status = params[:status].presence_in(InvoiceSummary::FILTERS) || "all"
     @invoices = @summary.filtered(@status)
+  end
+
+  def show
+    @item = InvoiceItem.new
   end
 
   def generate

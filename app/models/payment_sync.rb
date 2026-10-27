@@ -40,7 +40,14 @@ class PaymentSync
 
       paid_at = Time.zone.parse(data["settlement_time"].to_s) || Time.current
       @payment.update!(paid_at: paid_at)
-      @payment.invoice.mark_paid!(via: @payment.paid_via, at: paid_at)
+
+      invoice = @payment.invoice
+      if @payment.gross_amount == invoice.amount + @payment.admin_fee
+        invoice.mark_paid!(via: @payment.paid_via, at: paid_at)
+      else
+        # Nominal tagihan berubah (biaya tambahan) setelah transaksi ini dibuat.
+        Rails.logger.warn("[Midtrans] #{@payment.order_id} dibayar #{@payment.gross_amount}, tagihan #{invoice.number} sekarang #{invoice.amount}; tidak ditandai lunas otomatis")
+      end
     end
 
     def settled?(data)
