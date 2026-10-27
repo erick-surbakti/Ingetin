@@ -2,6 +2,8 @@
 # jadi semua request memakai server key pemilik tagihan.
 module Midtrans
   class Error < StandardError; end
+  # Server key ditolak (HTTP 401).
+  class Unauthorized < Error; end
 
   # Diganti dengan client palsu di test.
   mattr_accessor :client_class, default: "Midtrans::Client"

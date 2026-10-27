@@ -16,6 +16,9 @@ class MidtransWebhooksController < ApplicationController
       return head :unauthorized
     end
 
+    owner = payment.owner
+    owner.update_column(:midtrans_notified_at, Time.current) if owner.midtrans_notified_at.nil?
+
     PaymentSync.new(payment).call
     head :ok
   rescue JSON::ParserError

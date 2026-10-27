@@ -28,7 +28,9 @@ Rails.application.routes.draw do
   get "t/:token" => "public_invoices#show", as: :public_invoice
   post "t/:token/payments" => "public_payments#create", as: :public_invoice_payments
 
-  resource :payment_settings, only: %i[ edit update ]
+  resource :payment_settings, only: %i[ edit update ] do
+    post :check
+  end
 
   # Notifikasi pembayaran dari Midtrans (HTTP notification / webhook).
   post "webhooks/midtrans" => "midtrans_webhooks#create", as: :midtrans_webhook

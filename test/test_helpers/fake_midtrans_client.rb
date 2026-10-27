@@ -1,12 +1,13 @@
 # Pengganti Midtrans::Client di test: tidak ada request jaringan.
 class FakeMidtransClient
   class << self
-    attr_accessor :snap_requests, :statuses, :fail_with
+    attr_accessor :snap_requests, :statuses, :fail_with, :unauthorized
 
     def reset!
       self.snap_requests = []
       self.statuses = {}
       self.fail_with = nil
+      self.unauthorized = false
     end
 
     def settle!(payment, transaction_id: "tx-#{payment.order_id}", settlement_time: "2026-10-30 14:05:00", status: "settlement")
@@ -38,6 +39,7 @@ class FakeMidtransClient
   end
 
   def transaction_status(order_id)
+    raise Midtrans::Unauthorized, "Status API HTTP 401" if self.class.unauthorized
     raise Midtrans::Error, self.class.fail_with if self.class.fail_with
 
     self.class.statuses.fetch(order_id) { { "status_code" => "404" } }
