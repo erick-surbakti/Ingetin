@@ -1,0 +1,9 @@
+<%# Logo Ingetin: simbol + tulisan "ingetin" dengan titik huruf i berwarna kuning.
+    size: :sm (header HP), :md (sidebar), :lg (halaman masuk). tone: :dark untuk latar terang, :light untuk latar gelap. %>
+<% size = local_assigns.fetch(:size, :md) %>
+<% tone = local_assigns.fetch(:tone, :dark) %>
+<% mark_px, text_class, gap = { sm: [ 26, "text-lg", "gap-1.5" ], md: [ 32, "text-xl", "gap-2" ], lg: [ 46, "text-3xl", "gap-2.5" ] }.fetch(size) %>
+<span class="inline-flex items-center <%= gap %> <%= local_assigns[:class] %>" role="img" aria-label="Ingetin">
+  <%= render "shared/logo_mark", size: mark_px, class: (tone == :light ? "text-white" : "text-brand-600") %>
+  <span class="wordmark <%= text_class %> <%= tone == :light ? "text-white" : "text-ink" %>" aria-hidden="true"><span class="wordmark-i">ı<span class="wordmark-dot"></span></span>nget<span class="wordmark-i">ı<span class="wordmark-dot"></span></span>n</span>
+</span>

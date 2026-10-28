@@ -7,9 +7,8 @@
 <% property = tenant.room.property %>
 
 <div class="mx-auto max-w-md pb-6">
-  <div class="no-print mb-5 flex items-center justify-center gap-2 text-sm font-bold text-muted">
-    <span class="flex size-7 items-center justify-center rounded-lg bg-brand-600 text-white"><%= icon(:home, class: "size-4") %></span>
-    Ingetin
+  <div class="no-print mb-5 flex justify-center">
+    <%= render "shared/logo", size: :sm %>
   </div>
 
   <% if @invoice.paid? %>

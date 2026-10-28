@@ -170,7 +170,7 @@ Untuk developer: langkah alur → file yang perlu dibuka.
 | Client Midtrans | `app/models/midtrans.rb`, `app/models/midtrans/client.rb` |
 | Pengaturan & panduan Midtrans | `app/controllers/payment_settings_controller.rb`, `app/models/midtrans_connection_check.rb`, `app/views/payment_settings/` |
 | Dasbor | `app/controllers/dashboard_controller.rb`, `app/views/dashboard/show.html.erb` |
-| Tampilan & ikon | `app/assets/tailwind/application.css`, `app/views/layouts/application.html.erb`, `app/helpers/application_helper.rb` |
+| Tampilan, ikon & logo | `app/assets/tailwind/application.css`, `app/views/layouts/application.html.erb`, `app/helpers/application_helper.rb`, `app/views/shared/_logo.html.erb`, `public/icon.svg` |
 
 Test ada di `test/` dengan struktur yang sama (`test/models`, `test/controllers`, `test/jobs`). Di test, Midtrans diganti `test/test_helpers/fake_midtrans_client.rb`, jadi tidak ada request jaringan.
 
