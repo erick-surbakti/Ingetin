@@ -7,6 +7,14 @@ class InvoicesController < ApplicationController
     @summary = InvoiceSummary.new(invoices)
     @status = params[:status].presence_in(InvoiceSummary::FILTERS) || "all"
     @invoices = @summary.filtered(@status)
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        export = InvoiceCsvExport.new(@invoices, month: @month, status: @status)
+        send_data export.to_csv, filename: export.filename, type: "text/csv; charset=utf-8", disposition: "attachment"
+      end
+    end
   end
 
   def show

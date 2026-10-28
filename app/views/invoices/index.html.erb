@@ -5,9 +5,18 @@
     <p class="text-sm font-medium text-muted">Penagihan</p>
     <h1 class="page-title mt-0.5">Tagihan</h1>
   </div>
-  <%= button_to generate_invoices_path, class: "btn-secondary" do %>
-    <%= icon(:refresh, class: "size-4", stroke: 2) %> Buat tagihan jatuh tempo
-  <% end %>
+  <div class="flex flex-wrap gap-2">
+    <% if @summary.invoices.any? %>
+      <%= link_to invoices_path(format: :csv, month: @month.strftime("%Y-%m"), status: (@status == "all" ? nil : @status)),
+            class: "btn-secondary", id: "export_csv", data: { turbo: false },
+            title: "Unduh rekap tagihan #{l(@month, format: :month)} untuk Excel" do %>
+        <%= icon(:download, class: "size-4", stroke: 2) %> Unduh CSV
+      <% end %>
+    <% end %>
+    <%= button_to generate_invoices_path, class: "btn-secondary" do %>
+      <%= icon(:refresh, class: "size-4", stroke: 2) %> Buat tagihan jatuh tempo
+    <% end %>
+  </div>
 </div>
 
 <div class="mt-5 flex items-center justify-between gap-2 rounded-2xl border border-line bg-white p-1.5 shadow-soft sm:inline-flex sm:justify-start">

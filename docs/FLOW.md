@@ -162,6 +162,7 @@ Untuk developer: langkah alur → file yang perlu dibuka.
 | Membuat tagihan H-3 | `app/models/invoice_generator.rb` |
 | Daftar, filter, & detail tagihan | `app/controllers/invoices_controller.rb`, `app/models/invoice_summary.rb`, `app/views/invoices/` |
 | Biaya tambahan | `app/controllers/invoice_items_controller.rb`, `app/models/invoice_item.rb`, `Invoice#add_item!` / `#remove_item!` |
+| Ekspor CSV (rekap per bulan) | `InvoicesController#index` format `csv`, `app/models/invoice_csv_export.rb` |
 | Pesan WhatsApp | `app/models/invoice_message.rb`, `app/javascript/controllers/track_send_controller.js` |
 | Halaman tagihan & kuitansi penghuni | `app/controllers/public_invoices_controller.rb`, `app/views/public_invoices/show.html.erb` |
 | Membuat transaksi Snap | `app/controllers/public_payments_controller.rb`, `app/models/payment_checkout.rb`, `app/javascript/controllers/pay_controller.js` |

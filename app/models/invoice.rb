@@ -1,5 +1,6 @@
 class Invoice < ApplicationRecord
   PAID_VIA = %w[ cash qris bank_transfer ].freeze
+  PAID_VIA_LABELS = { "cash" => "Tunai", "qris" => "QRIS", "bank_transfer" => "Virtual Account" }.freeze
 
   class Locked < StandardError; end
 
