@@ -60,4 +60,14 @@ class PaymentSyncTest < ActiveSupport::TestCase
     PaymentSync.new(@payment).call
     assert_equal "created", @payment.reload.status
   end
+
+  test "a settlement for an outdated amount does not mark the invoice paid" do
+    @invoice.update!(amount: 975_000)
+    FakeMidtransClient.settle!(@payment)
+
+    PaymentSync.new(@payment).call
+
+    assert @payment.reload.paid_at.present?
+    assert @invoice.reload.unpaid?
+  end
 end

@@ -91,4 +91,38 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
     patch mark_paid_invoice_path(other)
     assert_response :not_found
   end
+
+  test "csv export downloads the owner's invoices for the month" do
+    get invoices_path(format: :csv, month: "2026-10")
+
+    assert_response :success
+    assert_equal "text/csv; charset=utf-8", response.media_type + "; charset=" + response.charset
+    assert_match 'attachment; filename="ingetin-tagihan-2026-10.csv"', response.headers["Content-Disposition"]
+    body = response.body.dup.force_encoding("UTF-8")
+    assert_includes body, invoices(:joko_october).number
+    assert_not_includes body, invoices(:rina_october).number
+  end
+
+  test "csv export respects the status tab" do
+    travel_to Time.zone.local(2026, 10, 20, 9) do
+      get invoices_path(format: :csv, month: "2026-10", status: "paid")
+    end
+
+    assert_match "ingetin-tagihan-2026-10-lunas.csv", response.headers["Content-Disposition"]
+    assert_not_includes response.body.dup.force_encoding("UTF-8"), invoices(:joko_october).number
+  end
+
+  test "index shows the csv button only when the month has invoices" do
+    get invoices_path(month: "2026-10")
+    assert_select "#export_csv[href=?]", invoices_path(format: :csv, month: "2026-10")
+
+    get invoices_path(month: "2026-01")
+    assert_select "#export_csv", count: 0
+  end
+
+  test "csv export requires login" do
+    sign_out
+    get invoices_path(format: :csv, month: "2026-10")
+    assert_redirected_to new_session_path
+  end
 end

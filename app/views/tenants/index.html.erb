@@ -23,10 +23,10 @@
 <% else %>
   <ul class="mt-4 grid gap-3 lg:grid-cols-2">
     <% @tenants.each do |tenant| %>
-      <li class="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-soft" id="<%= dom_id(tenant) %>">
+      <li class="relative flex items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-soft transition hover:border-brand-200" id="<%= dom_id(tenant) %>">
         <span class="avatar size-11 <%= "opacity-60" unless tenant.active? %>"><%= initials(tenant.name) %></span>
         <div class="min-w-0 flex-1">
-          <p class="truncate font-bold"><%= tenant.name %></p>
+          <%= link_to tenant.name, tenant_path(tenant), class: "block truncate font-bold after:absolute after:inset-0 hover:underline" %>
           <p class="truncate text-xs text-muted"><%= tenant.room.property.name %> · Kamar <%= tenant.room.name %></p>
           <p class="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
             <% if tenant.active? %>
@@ -37,7 +37,7 @@
             <span><%= phone_display(tenant.phone) %></span>
           </p>
         </div>
-        <%= link_to edit_tenant_path(tenant), class: "rounded-lg p-2 text-muted hover:bg-canvas hover:text-ink", title: "Ubah #{tenant.name}", aria: { label: "Ubah #{tenant.name}" } do %>
+        <%= link_to edit_tenant_path(tenant), class: "relative z-10 rounded-lg p-2 text-muted hover:bg-canvas hover:text-ink", title: "Ubah #{tenant.name}", aria: { label: "Ubah #{tenant.name}" } do %>
           <%= icon(:pencil, class: "size-4") %>
         <% end %>
       </li>

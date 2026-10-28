@@ -30,6 +30,7 @@ module Midtrans
       uri = URI("#{Midtrans.api_base_url}/v2/#{ERB::Util.url_encode(order_id)}/status")
       response = request(Net::HTTP::Get, uri)
 
+      raise Unauthorized, "Status API HTTP 401" if response.code == "401"
       unless response.is_a?(Net::HTTPSuccess) || response.code == "404"
         raise Error, "Status API HTTP #{response.code}"
       end

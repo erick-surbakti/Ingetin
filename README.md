@@ -19,7 +19,7 @@ Aplikasi tagihan sewa otomatis untuk pemilik kos. Tagihan bulanan dibuat otomati
 | P0 | Kuitansi digital untuk penghuni |
 | P1 | Pengingat telat, tagihan tambahan, catat bayar tunai, ekspor CSV |
 
-Detail lengkap: [`docs/PRD.md`](docs/PRD.md). Keputusan teknis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Detail lengkap: [`docs/PRD.md`](docs/PRD.md). Keputusan teknis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Alur aplikasi (flowchart): [`docs/FLOW.md`](docs/FLOW.md).
 
 ## Tech stack
 
@@ -78,7 +78,7 @@ config/locales/   Terjemahan Bahasa Indonesia
 db/               Migrasi dan schema
 test/             Test
 .github/          CI, Dependabot, template issue & PR
-docs/             PRD dan keputusan arsitektur
+docs/             PRD, keputusan arsitektur, dan alur aplikasi
 ```
 
 ## Kontribusi

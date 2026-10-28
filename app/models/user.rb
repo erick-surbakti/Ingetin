@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :rooms, through: :properties
   has_many :tenants, through: :rooms
   has_many :invoices, through: :tenants
+  has_many :payments, through: :invoices
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :name, with: ->(n) { n.squish }
@@ -32,6 +33,20 @@ class User < ApplicationRecord
 
   def midtrans_connected?
     midtrans_server_key.present?
+  end
+
+  # Server key sandbox diawali "SB-".
+  def midtrans_sandbox_key?
+    midtrans_server_key.to_s.start_with?("SB-")
+  end
+
+  # Key sandbox di aplikasi mode produksi (atau sebaliknya) selalu ditolak Midtrans.
+  def midtrans_key_matches_environment?
+    !midtrans_connected? || midtrans_sandbox_key? != Midtrans.production?
+  end
+
+  def midtrans_payment_received?
+    payments.where.not(paid_at: nil).exists?
   end
 
   def masked_midtrans_server_key

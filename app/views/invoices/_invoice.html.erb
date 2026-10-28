@@ -4,8 +4,8 @@
   <div class="flex items-center gap-3">
     <span class="avatar"><%= initials(invoice.tenant.name) %></span>
     <div class="min-w-0 flex-1">
-      <p class="truncate font-bold"><%= invoice.tenant.name %></p>
-      <p class="truncate text-xs text-muted"><%= room.property.name %> · <%= room.name %></p>
+      <%= link_to invoice.tenant.name, invoice_path(invoice), class: "block truncate font-bold hover:underline" %>
+      <p class="truncate text-xs text-muted"><%= room.property.name %> · <%= room.name %><% if invoice.items.any? %> · +<%= invoice.items.size %> biaya<% end %></p>
     </div>
     <div class="flex shrink-0 flex-col items-end gap-1 lg:hidden">
       <p class="text-sm font-bold"><%= rupiah(invoice.amount) %></p>
@@ -39,8 +39,8 @@
             form: { class: "contents", data: { turbo_confirm: "Catat tagihan #{invoice.tenant.name} lunas dibayar tunai?" } } do %>
         <%= icon(:cash, class: "size-4") %><span class="lg:sr-only">Tunai</span>
       <% end %>
-      <%= link_to public_invoice_path(invoice.public_token), class: "btn-secondary flex-1 px-3 py-2 sm:flex-none", target: "_blank", rel: "noopener", title: "Lihat tagihan" do %>
-        <%= icon(:eye, class: "size-4") %><span class="lg:sr-only">Lihat</span>
+      <%= link_to invoice_path(invoice), class: "btn-secondary flex-1 px-3 py-2 sm:flex-none", title: "Detail & tambah biaya" do %>
+        <%= icon(:plus, class: "size-4", stroke: 2) %><span class="lg:sr-only">Biaya</span>
       <% end %>
     <% else %>
       <%= link_to public_invoice_path(invoice.public_token), class: "btn-secondary px-3 py-2", target: "_blank", rel: "noopener" do %>

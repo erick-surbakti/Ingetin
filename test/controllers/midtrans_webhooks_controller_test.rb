@@ -90,4 +90,14 @@ class MidtransWebhooksControllerTest < ActionDispatch::IntegrationTest
     assert_response :service_unavailable
     assert @invoice.reload.unpaid?
   end
+
+  test "a verified notification records that the notification url works" do
+    FakeMidtransClient.settle!(@payment)
+
+    deliver(notification(signature: "palsu"))
+    assert_nil users(:two).reload.midtrans_notified_at
+
+    deliver(notification)
+    assert users(:two).reload.midtrans_notified_at.present?
+  end
 end

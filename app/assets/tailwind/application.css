@@ -137,6 +137,28 @@
     }
   }
 
+  /* Tulisan logo "ingetin": huruf ı (tanpa titik) + titik kuning sendiri. */
+  .wordmark {
+    @apply inline-flex items-center leading-none font-extrabold whitespace-nowrap;
+    letter-spacing: -0.05em;
+  }
+
+  .wordmark-i {
+    @apply relative inline-block;
+  }
+
+  /* Diukur dari metrik Plus Jakarta Sans 800 dengan line-height 1: titik i asli
+     berpusat ~0.68em di atas garis dasar = ~0.23em dari atas kotak huruf.
+     Geser kanan 0.025em untuk mengimbangi letter-spacing negatif. */
+  .wordmark-dot {
+    @apply absolute rounded-full bg-accent;
+    left: calc(50% + 0.025em);
+    top: 0.135em;
+    width: 0.19em;
+    height: 0.19em;
+    transform: translateX(-50%);
+  }
+
   .nav-item {
     @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors;
   }

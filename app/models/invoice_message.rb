@@ -15,6 +15,8 @@ class InvoiceMessage
     due = I18n.l(@invoice.due_on, format: :long)
     owner = tenant.room.property.user.name
 
+    amount = "#{amount} (#{extras})" if extras
+
     if @invoice.overdue?(@today)
       <<~TEXT.strip
         Halo #{tenant.name}, mengingatkan tagihan #{@invoice.description} sebesar #{amount} sudah lewat jatuh tempo (#{due}).
@@ -36,6 +38,13 @@ class InvoiceMessage
         #{owner}
       TEXT
     end
+  end
+
+  # "termasuk listrik Rp75.000, air Rp20.000" atau nil jika tanpa biaya tambahan.
+  def extras
+    return if @invoice.items.empty?
+
+    "termasuk " + @invoice.items.map { |item| "#{item.name} #{number_to_currency(item.amount)}" }.join(", ")
   end
 
   def whatsapp_url

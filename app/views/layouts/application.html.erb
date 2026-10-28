@@ -28,9 +28,8 @@
     <% if authenticated? %>
       <%# Sidebar laptop %>
       <aside class="no-print fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-white px-4 py-6 lg:flex">
-        <%= link_to root_path, class: "flex items-center gap-2.5 px-2" do %>
-          <span class="flex size-9 items-center justify-center rounded-xl bg-brand-600 text-white"><%= icon(:home, class: "size-5") %></span>
-          <span class="text-lg font-extrabold tracking-tight text-ink">Ingetin</span>
+        <%= link_to root_path, class: "flex items-center px-2", aria: { label: "Ingetin, ke dasbor" } do %>
+          <%= render "shared/logo", size: :md %>
         <% end %>
 
         <nav class="mt-8 flex flex-col gap-1" aria-label="Menu utama">
@@ -56,9 +55,8 @@
       <%# Bar atas HP %>
       <header class="no-print sticky top-0 z-20 border-b border-line bg-canvas/90 backdrop-blur lg:hidden">
         <div class="flex items-center justify-between px-4 py-3">
-          <%= link_to root_path, class: "flex items-center gap-2" do %>
-            <span class="flex size-8 items-center justify-center rounded-lg bg-brand-600 text-white"><%= icon(:home, class: "size-4") %></span>
-            <span class="text-base font-extrabold tracking-tight">Ingetin</span>
+          <%= link_to root_path, class: "flex items-center", aria: { label: "Ingetin, ke dasbor" } do %>
+            <%= render "shared/logo", size: :sm %>
           <% end %>
           <div class="flex items-center gap-2">
             <span class="avatar size-8 bg-white text-xs ring-1 ring-line"><%= initials(Current.user.name) %></span>

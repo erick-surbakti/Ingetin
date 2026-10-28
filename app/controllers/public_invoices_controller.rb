@@ -2,7 +2,7 @@ class PublicInvoicesController < ApplicationController
   allow_unauthenticated_access
 
   def show
-    @invoice = Invoice.includes(tenant: { room: { property: :user } }).find_by!(public_token: params[:token])
+    @invoice = Invoice.includes(:items, tenant: { room: { property: :user } }).find_by!(public_token: params[:token])
     sync_after_payment if params[:order_id].present? && @invoice.unpaid?
     response.set_header("X-Robots-Tag", "noindex, nofollow")
   end

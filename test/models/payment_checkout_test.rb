@@ -66,4 +66,27 @@ class PaymentCheckoutTest < ActiveSupport::TestCase
     assert_raises(Midtrans::Error) { checkout("qris") }
     assert_equal "failure", @invoice.payments.last.status
   end
+
+  test "item details list the rent and extra charges and add up to the gross amount" do
+    @invoice.add_item!(name: "Listrik", amount: 75_000)
+    users(:two).update!(va_admin_fee: 4_000)
+
+    payment = checkout("va")
+
+    assert_equal 979_000, payment.gross_amount
+    items = FakeMidtransClient.snap_requests.last[:payload][:item_details]
+    assert_equal [ 900_000, 75_000, 4_000 ], items.map { |item| item[:price] }
+    assert_equal "Listrik", items.second[:name]
+    assert_equal payment.gross_amount, items.sum { |item| item[:price] * item[:quantity] }
+  end
+
+  test "does not reuse a pending payment created for an older amount" do
+    first = checkout("va")
+    first.update!(status: "pending")
+    @invoice.update!(amount: 950_000)
+
+    second = checkout("va")
+    assert_not_equal first, second
+    assert_equal 955_000, second.gross_amount
+  end
 end

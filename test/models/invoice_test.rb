@@ -39,4 +39,39 @@ class InvoiceTest < ActiveSupport::TestCase
     invoice = invoices(:joko_october)
     assert_equal "INV-202610-#{invoice.id.to_s.rjust(5, "0")}", invoice.number
   end
+
+  test "add and remove items change the total and keep the rent" do
+    invoice = invoices(:joko_october)
+
+    listrik = invoice.add_item!(name: "Listrik", amount: 75_000)
+    invoice.add_item!(name: "Air", amount: 20_000)
+    assert_equal 995_000, invoice.reload.amount
+    assert_equal 900_000, invoice.rent_amount
+
+    invoice.remove_item!(listrik)
+    assert_equal 920_000, invoice.reload.amount
+    assert_equal [ "Air" ], invoice.items.map(&:name)
+  end
+
+  test "items are locked once paid or while a virtual account payment is pending" do
+    paid = invoices(:rina_october)
+    assert_equal "Tagihan sudah lunas.", paid.items_locked_reason
+    assert_raises(Invoice::Locked) { paid.add_item!(name: "Air", amount: 20_000) }
+
+    invoice = invoices(:joko_october)
+    invoice.payments.create!(order_id: "ING-#{invoice.id}-pend0001", channel: "va", status: "pending",
+      gross_amount: 905_000, admin_fee: 5_000, expires_at: 1.day.from_now)
+    assert_raises(Invoice::Locked) { invoice.add_item!(name: "Air", amount: 20_000) }
+    assert_equal 900_000, invoice.reload.amount
+  end
+
+  test "changing items supersedes Snap transactions with the old amount" do
+    invoice = invoices(:joko_october)
+    open_payment = invoice.payments.create!(order_id: "ING-#{invoice.id}-open0001", channel: "qris",
+      gross_amount: 900_000, expires_at: 1.day.from_now)
+
+    invoice.add_item!(name: "Laundry", amount: 50_000)
+
+    assert_equal "superseded", open_payment.reload.status
+  end
 end
